@@ -35,7 +35,7 @@ class Skill:
 
 
 # ---------------------------------------------------------------------------
-# Built-in skills (12 skills, 5 categories)
+# Built-in skills (10 skills, 4 categories)
 # ---------------------------------------------------------------------------
 
 SKILLS: dict[str, Skill] = {}
@@ -44,14 +44,14 @@ def _register(*skills: Skill):
     for s in skills:
         SKILLS[s.key] = s
 
-# ---- Web 开发 ----
+# ---- Web开发 ----
 _register(
     Skill(
         key="frontend",
         name="前端工程师",
         name_en="Frontend Engineer",
         icon="🎨",
-        category="Web 开发",
+        category="Web开发",
         description="React/Vue/Next.js 前端开发专家，精通组件设计、状态管理、性能优化",
         description_en="React/Vue/Next.js frontend expert — components, state management, performance",
         system_prompt=(
@@ -69,7 +69,7 @@ _register(
         name="后端架构师",
         name_en="Backend Architect",
         icon="⚙️",
-        category="Web 开发",
+        category="Web开发",
         description="Python/Node.js 后端开发，API 设计、数据库优化、微服务架构",
         description_en="Python/Node.js backend — API design, database optimization, microservices",
         system_prompt=(
@@ -87,7 +87,7 @@ _register(
         name="全栈开发者",
         name_en="Fullstack Developer",
         icon="🔗",
-        category="Web 开发",
+        category="Web开发",
         description="前后端通吃，擅长快速搭建完整项目、全链路调试",
         description_en="Full-stack developer — rapid prototyping, end-to-end debugging",
         system_prompt=(
@@ -102,14 +102,14 @@ _register(
     ),
 )
 
-# ---- DevOps ----
+# ---- 运维部署 ----
 _register(
     Skill(
         key="devops",
         name="DevOps 工程师",
         name_en="DevOps Engineer",
         icon="🚀",
-        category="DevOps",
+        category="运维部署",
         description="CI/CD、Docker、K8s、云服务部署与运维自动化",
         description_en="CI/CD, Docker, Kubernetes, cloud deployment & automation",
         system_prompt=(
@@ -127,7 +127,7 @@ _register(
         name="Linux 运维专家",
         name_en="Linux SysAdmin",
         icon="🐧",
-        category="DevOps",
+        category="运维部署",
         description="Linux 系统管理、Shell 脚本、网络配置、故障排查",
         description_en="Linux sysadmin — shell scripting, networking, troubleshooting",
         system_prompt=(
@@ -142,14 +142,14 @@ _register(
     ),
 )
 
-# ---- 数据 & AI ----
+# ---- 数据&AI ----
 _register(
     Skill(
         key="datascience",
         name="数据科学家",
         name_en="Data Scientist",
         icon="📊",
-        category="数据 & AI",
+        category="数据&AI",
         description="数据分析、机器学习、可视化，pandas/sklearn/PyTorch",
         description_en="Data analysis, ML, visualization — pandas, sklearn, PyTorch",
         system_prompt=(
@@ -167,7 +167,7 @@ _register(
         name="AI 应用开发者",
         name_en="AI App Developer",
         icon="🤖",
-        category="数据 & AI",
+        category="数据&AI",
         description="LLM 应用开发、RAG、Agent 架构、Prompt 工程",
         description_en="LLM app development — RAG, agents, prompt engineering",
         system_prompt=(
@@ -182,54 +182,14 @@ _register(
     ),
 )
 
-# ---- 电商 ----
-_register(
-    Skill(
-        key="amazon",
-        name="亚马逊运营专家",
-        name_en="Amazon Operations Expert",
-        icon="📦",
-        category="电商",
-        description="Amazon Listing 优化、广告策略、数据分析、合规管理",
-        description_en="Amazon listing optimization, PPC strategy, data analysis, compliance",
-        system_prompt=(
-            "你是一位资深亚马逊运营专家，精通跨境电商运营。\n"
-            "- Listing 优化: 标题关键词布局、五点描述、A+ 内容设计\n"
-            "- 广告策略: SP/SB/SD 广告结构、ACOS 优化、否定词管理\n"
-            "- 数据分析: 业务报告解读、搜索词分析、竞品追踪\n"
-            "- 库存管理: FBA 补货计划、仓储费优化、IPI 提升\n"
-            "- 合规: 品牌注册、知识产权、review 政策"
-        ),
-        tags=["amazon", "ecommerce", "ppc", "listing"],
-    ),
-    Skill(
-        key="shopify",
-        name="Shopify 建站专家",
-        name_en="Shopify Expert",
-        icon="🛍️",
-        category="电商",
-        description="Shopify 主题开发、Liquid 模板、应用集成、SEO 优化",
-        description_en="Shopify theme development, Liquid templates, app integration, SEO",
-        system_prompt=(
-            "你是一位 Shopify 建站专家，精通独立站开发和运营。\n"
-            "- 主题开发: Liquid 模板语法、Section/Block 架构、JSON 模板\n"
-            "- 前端: Tailwind CSS 响应式设计、Alpine.js 交互\n"
-            "- SEO: 结构化数据、meta 标签优化、站点地图\n"
-            "- 应用集成: Shopify API (REST/GraphQL)、Webhook 配置\n"
-            "- 转化优化: 结账流程、产品页设计、信任标识"
-        ),
-        tags=["shopify", "liquid", "ecommerce", "seo"],
-    ),
-)
-
-# ---- 工具 ----
+# ---- 效率工具 ----
 _register(
     Skill(
         key="git",
         name="Git 大师",
         name_en="Git Master",
         icon="🔀",
-        category="工具",
+        category="效率工具",
         description="Git 工作流、分支策略、冲突解决、仓库管理",
         description_en="Git workflows, branching strategies, conflict resolution, repo management",
         system_prompt=(
@@ -247,7 +207,7 @@ _register(
         name="数据库专家",
         name_en="Database Expert",
         icon="🗄️",
-        category="工具",
+        category="效率工具",
         description="SQL 优化、数据库设计、PostgreSQL/MySQL/Redis 运维调优",
         description_en="SQL optimization, database design, PostgreSQL/MySQL/Redis tuning",
         system_prompt=(
@@ -265,7 +225,7 @@ _register(
         name="测试工程师",
         name_en="QA Engineer",
         icon="🧪",
-        category="工具",
+        category="效率工具",
         description="单元测试、集成测试、E2E 测试、TDD 实践",
         description_en="Unit/integration/E2E testing, TDD practices",
         system_prompt=(

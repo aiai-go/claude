@@ -79,22 +79,6 @@ TEMPLATES = {
             "- 标注可能让人困惑的部分"
         ),
     },
-    "listing_gen": {
-        "name_zh": "Amazon Listing生成",
-        "name_tw": "Amazon Listing生成",
-        "system": (
-            "你是一个Amazon跨境电商专家。请根据产品信息生成高质量的Amazon listing。\n"
-            "包含：\n"
-            "- 标题（Title）：包含核心关键词，不超过200字符\n"
-            "- 五点描述（Bullet Points）：突出卖点和差异化\n"
-            "- 产品描述（Description）：详细且有说服力\n"
-            "- 后台关键词（Search Terms）：不重复标题词\n"
-            "要求：\n"
-            "- 符合Amazon风格指南\n"
-            "- 自然嵌入高搜索量关键词\n"
-            "- 英文输出，但用中文解释策略"
-        ),
-    },
     "translate_code": {
         "name_zh": "代码翻译",
         "name_tw": "程式碼翻譯",

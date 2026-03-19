@@ -48,7 +48,7 @@
 - 命令是中文的：`/帮助`、`/模板`、`/自动`
 - 工具提示是中文的："读取文件"、"执行命令"、"搜索内容"
 - AI 回答是中文的：代码注释、分析报告、错误解释，全部中文输出
-- 预设模板是中文的：代码审查、Bug 修复、Amazon Listing 生成...
+- 预设模板是中文的：代码审查、Bug 修复、代码重构...
 
 而且，**如果你已经订阅了 Claude Code，claudezh 完全免费**——它直接复用你的订阅，零额外成本。
 
@@ -61,37 +61,35 @@
 | **全中文交互** | 命令、提示、输出、工具名称，全部中文化 |
 | **双模式架构** | 订阅模式（复用 Claude Code，免费）+ API 模式（独立运行，按量付费） |
 | **智能工具链** | 文件读写、代码搜索、命令执行、项目分析、Git 状态，开箱即用 |
-| **8 套预设模板** | 代码生成、代码审查、Bug 修复、重构、测试、解释、翻译、Amazon Listing |
+| **7 套预设模板** | 代码生成、代码审查、Bug 修复、重构、测试、解释、翻译 |
 | **3 个预设代理** | 代码审查员、Bug 修复师、测试工程师——各司其职 |
 | **三语支持** | 简体中文 / 繁体中文 / English，随时切换 |
 | **安全权限控制** | 安全模式（危险操作前确认） / 自动模式（全自动执行） |
 | **对话历史** | 自动保存、加载、压缩，跨会话连续工作 |
 | **项目感知** | 自动检测项目类型、语言、框架，给出更精准的建议 |
 | **危险命令拦截** | 内置安全策略，自动拦截 `rm -rf` 等危险操作 |
-| **12 个内置技能** | 覆盖 Web 开发、DevOps、数据 AI、电商、工具 5 大领域 |
+| **10 个内置技能** | 覆盖 Web开发、运维部署、数据&AI、效率工具 4 大领域 |
 
 <br/>
 
 ### Skills 技能系统
 
-claudezh 内置了 12 个领域专属的 AI 技能人格。每个技能赋予 AI 特定领域的专业知识和行为模式，让回答更精准、更专业。
+claudezh 内置了 10 个领域专属的 AI 技能人格。每个技能赋予 AI 特定领域的专业知识和行为模式，让回答更精准、更专业。
 
 #### 可用技能
 
 | 图标 | 技能名称 | 英文名 | 分类 | 说明 |
 |:---:|:---|:---|:---|:---|
-| 🎨 | 前端工程师 | Frontend Engineer | Web 开发 | React/Vue/Next.js 前端开发专家 |
-| ⚙️ | 后端架构师 | Backend Architect | Web 开发 | Python/Node.js 后端开发，API 设计 |
-| 🔗 | 全栈开发者 | Fullstack Developer | Web 开发 | 前后端通吃，快速搭建完整项目 |
-| 🚀 | DevOps 工程师 | DevOps Engineer | DevOps | CI/CD、Docker、K8s 部署与运维 |
-| 🐧 | Linux 运维专家 | Linux SysAdmin | DevOps | 系统管理、Shell 脚本、故障排查 |
-| 📊 | 数据科学家 | Data Scientist | 数据 & AI | 数据分析、机器学习、可视化 |
-| 🤖 | AI 应用开发者 | AI App Developer | 数据 & AI | LLM 应用、RAG、Agent 架构 |
-| 📦 | 亚马逊运营专家 | Amazon Expert | 电商 | Listing 优化、广告策略、数据分析 |
-| 🛍️ | Shopify 建站专家 | Shopify Expert | 电商 | 主题开发、Liquid 模板、SEO 优化 |
-| 🔀 | Git 大师 | Git Master | 工具 | Git 工作流、分支策略、冲突解决 |
-| 🗄️ | 数据库专家 | Database Expert | 工具 | SQL 优化、数据库设计、运维调优 |
-| 🧪 | 测试工程师 | QA Engineer | 工具 | 单元测试、集成测试、TDD 实践 |
+| 🎨 | 前端工程师 | Frontend Engineer | Web开发 | React/Vue/Next.js 前端开发专家 |
+| ⚙️ | 后端架构师 | Backend Architect | Web开发 | Python/Node.js 后端开发，API 设计 |
+| 🔗 | 全栈开发者 | Fullstack Developer | Web开发 | 前后端通吃，快速搭建完整项目 |
+| 🚀 | DevOps 工程师 | DevOps Engineer | 运维部署 | CI/CD、Docker、K8s 部署与运维 |
+| 🐧 | Linux 运维专家 | Linux SysAdmin | 运维部署 | 系统管理、Shell 脚本、故障排查 |
+| 📊 | 数据科学家 | Data Scientist | 数据&AI | 数据分析、机器学习、可视化 |
+| 🤖 | AI 应用开发者 | AI App Developer | 数据&AI | LLM 应用、RAG、Agent 架构 |
+| 🔀 | Git 大师 | Git Master | 效率工具 | Git 工作流、分支策略、冲突解决 |
+| 🗄️ | 数据库专家 | Database Expert | 效率工具 | SQL 优化、数据库设计、运维调优 |
+| 🧪 | 测试工程师 | QA Engineer | 效率工具 | 单元测试、集成测试、TDD 实践 |
 
 #### 首次运行选择
 
@@ -107,7 +105,7 @@ claudezh 内置了 12 个领域专属的 AI 技能人格。每个技能赋予 AI
 可用技能:
   [x] 🎨 前端工程师
   [ ] ⚙️ 后端架构师
-  [x] 📦 亚马逊运营专家
+  [x] 🔗 全栈开发者
   ...
 
 输入编号切换启用/禁用
@@ -132,7 +130,7 @@ graph TB
         C -->|两者皆无| F[引导安装]
 
         B --> G[i18n 国际化<br/>zh-CN / zh-TW / en]
-        B --> H[预设模板 × 8]
+        B --> H[预设模板 × 7]
         B --> I[预设代理 × 3]
         B --> J[对话历史管理]
     end
@@ -180,7 +178,7 @@ claudezh 启动
 │
 ├── 核心模块
 │   ├── i18n 国际化 ── zh-CN / zh-TW / en
-│   ├── 预设模板 × 8 ── 代码生成 / 审查 / Bug修复 / 重构 / 测试 / 解释 / 翻译 / Listing
+│   ├── 预设模板 × 7 ── 代码生成 / 审查 / Bug修复 / 重构 / 测试 / 解释 / 翻译
 │   ├── 预设代理 × 3 ── 审查员 / 修复师 / 测试工程师
 │   └── 对话历史 ──── 自动保存 / 加载 / 压缩
 │
@@ -309,8 +307,7 @@ claudezh
   4. 代码重构
   5. 生成测试
   6. 代码解释
-  7. Amazon Listing生成
-  8. 代码翻译
+  7. 代码翻译
 
 [你] > 2
 
@@ -346,46 +343,7 @@ claudezh
   6. 返回格式不统一，部分用 dict，部分用 Pydantic model
 ```
 
-#### 场景三：用模板生成 Amazon Listing
-
-```
-[你] > /模板
-[你] > 7
-
->> 已启用模板: Amazon Listing生成
-
-[你] > 帮我生成一个无线蓝牙耳机的 listing，主打降噪和长续航，
-       目标市场美国，竞品是 AirPods Pro 和 Sony WF-1000XM5，
-       价格区间 $49-59，卖点是 45 小时续航和 -42dB 主动降噪
-
-助手> 好的，我来为你生成一个有竞争力的 Amazon Listing：
-
-  📋 **Title**
-  Wireless Earbuds Bluetooth 5.3, 45H Playtime Active Noise Cancelling
-  Earbuds -42dB ANC, Hi-Fi Stereo Deep Bass, IPX7 Waterproof, Touch
-  Control, USB-C Fast Charge, Ear Buds for iPhone Android
-
-  📋 **Bullet Points**
-  • 【45-Hour Ultra-Long Battery】...
-  • 【-42dB Advanced ANC Technology】...
-  • 【Bluetooth 5.3 & Hi-Fi Audio】...
-  • 【IPX7 Waterproof & Comfort Fit】...
-  • 【Smart Touch & Wide Compatibility】...
-
-  📋 **Description**
-  (A+ Content 结构化描述...)
-
-  📋 **Search Terms**
-  noise cancelling earphones wireless bluetooth anc...
-
-  💡 **策略说明**（中文）
-  - 标题 197 字符，嵌入 12 个高搜索量关键词
-  - Bullet Points 按"独特卖点 → 技术参数 → 使用场景"递进
-  - 价格区间 $49-59 直接对标 AirPods Pro 的半价策略
-  - 搜索词避开了标题中已有的词，最大化索引覆盖
-```
-
-#### 场景四：用预设代理自动修 Bug
+#### 场景三：用预设代理自动修 Bug
 
 ```
 [你] > 用户反馈说点击"提交订单"按钮后页面一直转圈，控制台报
@@ -429,7 +387,7 @@ claudezh
 | `/设置` | `/settings` | 查看当前配置（模型、语言、模式等） |
 | `/模型` | `/model` | 切换 AI 模型（Sonnet / Opus / Haiku） |
 | `/语言` | `/lang` | 切换界面语言（简中 / 繁中 / English） |
-| `/模板` | `/template` | 选择预设模板（代码生成、审查、Listing...） |
+| `/模板` | `/template` | 选择预设模板（代码生成、审查、重构...） |
 | `/工具` | `/tools` | 查看当前可用的工具列表 |
 | `/自动` | — | 切换到自动模式（AI 自动执行所有操作） |
 | `/安全` | — | 切换到安全模式（危险操作前确认） |
@@ -545,9 +503,8 @@ pip install --upgrade claudezh
 | **中文原生支持** | **全中文** | 英文 | 部分中文 | 英文 |
 | **运行环境** | 终端 | 终端 | IDE | IDE 插件 |
 | **中文命令** | `/帮助` `/模板` | 英文命令 | 无 CLI | 无 CLI |
-| **预设模板** | 8 套（含中文） | 无 | 无 | 无 |
+| **预设模板** | 7 套（含中文） | 无 | 无 | 无 |
 | **预设代理** | 3 个专业角色 | 无 | 无 | 无 |
-| **Amazon Listing** | 内置模板 | 无 | 无 | 无 |
 | **双模式** | 订阅 + API | 仅订阅 | 订阅 | 订阅 |
 | **免费使用** | 复用 Claude 订阅 | 需订阅 | 需订阅 | 需订阅 |
 | **开源** | MIT 开源 | 非开源 | 非开源 | 非开源 |
@@ -661,9 +618,9 @@ claudezh brings the full power of Claude to your terminal with a Chinese-first i
 - **Chinese-native experience** -- Commands, prompts, tool output, and error messages are all available in Simplified Chinese, Traditional Chinese, and English. Switch with a single command.
 - **Zero-config dual backend** -- If you have a Claude Code subscription, claudezh uses it for free. No subscription? Just set an API key and it works standalone. Backend detection is fully automatic.
 - **Built-in agentic tools** -- File read/write, code search (glob + regex), shell execution, Python execution, project analysis, and Git integration are available out of the box.
-- **Preset templates & agents** -- Code generation, review, bug fixing, refactoring, test writing, code explanation, Amazon Listing generation, and code translation templates. Specialized sub-agents (code reviewer, bug fixer, test writer) with curated system prompts.
+- **Preset templates & agents** -- Code generation, review, bug fixing, refactoring, test writing, code explanation, and code translation templates. Specialized sub-agents (code reviewer, bug fixer, test writer) with curated system prompts.
 - **Permission control** -- Safe mode (confirms before destructive operations) and auto mode (fully autonomous). Toggle with `/safe` or `/auto`.
-- **12 built-in skills** -- Domain-specific AI personas across 5 categories: Web, DevOps, Data/AI, E-commerce, and Tools. Each skill enhances the AI with specialized expertise.
+- **10 built-in skills** -- Domain-specific AI personas across 4 categories: Web, DevOps, Data/AI, and Tools. Each skill enhances the AI with specialized expertise.
 - **Trilingual i18n** -- Full interface in `zh-CN`, `zh-TW`, and `en`. Auto-detected from system locale or set via `CLAUDEZH_LANG`.
 
 ### Installation
@@ -758,7 +715,7 @@ claudezh accepts input in any language. Chinese commands have English aliases:
 
 ### Skills System
 
-claudezh ships with 12 built-in domain-specific AI skills across 5 categories. Each skill injects specialized system prompts that enhance the AI's expertise in that domain.
+claudezh ships with 10 built-in domain-specific AI skills across 4 categories. Each skill injects specialized system prompts that enhance the AI's expertise in that domain.
 
 | Icon | Skill | Category | Description |
 |:---:|:---|:---|:---|
@@ -769,8 +726,6 @@ claudezh ships with 12 built-in domain-specific AI skills across 5 categories. E
 | 🐧 | Linux SysAdmin | DevOps | Shell scripting, networking, troubleshooting |
 | 📊 | Data Scientist | Data/AI | pandas, sklearn, PyTorch, visualization |
 | 🤖 | AI App Developer | Data/AI | LLM apps, RAG, agents, prompt engineering |
-| 📦 | Amazon Expert | E-commerce | Listing optimization, PPC, data analysis |
-| 🛍️ | Shopify Expert | E-commerce | Theme dev, Liquid templates, SEO |
 | 🔀 | Git Master | Tools | Workflows, branching, conflict resolution |
 | 🗄️ | Database Expert | Tools | SQL optimization, PostgreSQL/Redis tuning |
 | 🧪 | QA Engineer | Tools | Unit/integration/E2E testing, TDD |
