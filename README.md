@@ -35,6 +35,112 @@
 
 <br/>
 
+---
+
+<div align="center">
+
+## 🎬 Demo 演示
+
+**看一眼你就知道，这就是你想要的 AI 编程体验。**
+
+</div>
+
+### 💻 终端实战演示
+
+> 一个真实场景：用一句中文，把 Flask 项目重构成 FastAPI
+
+```
+$ claudezh
+
+╭─────────────────────────────────────────────────╮
+│  ✨ claudezh v0.2.0 — AI 编程助手               │
+│  📁 ~/my-project                                │
+│  🌐 语言: 简体中文  |  🤖 模型: Claude Sonnet   │
+│  🛡️ 模式: 订阅模式 (Claude Code)                │
+│  🎯 技能: 全栈开发 · 代码审查 · API架构          │
+╰─────────────────────────────────────────────────╯
+
+你> 帮我把这个 Flask 项目重构成 FastAPI，保持所有 API 兼容
+
+助手> 我来分析当前项目结构...
+
+  🔍 使用工具: Glob | 扫描项目文件
+  📖 使用工具: Read | 读取 app.py (245行)
+  📖 使用工具: Read | 读取 models.py (89行)
+  📖 使用工具: Read | 读取 routes/ (6个文件)
+
+  分析完成。检测到:
+  • Flask 应用，14 个 API 端点
+  • SQLAlchemy ORM，5 个模型
+  • JWT 认证中间件
+  • 3 个蓝图 (auth, users, products)
+
+  开始重构...
+
+  ✏️ 使用工具: Write | 创建 main.py (FastAPI 入口)
+  ✏️ 使用工具: Write | 创建 routers/auth.py
+  ✏️ 使用工具: Write | 创建 routers/users.py
+  ✏️ 使用工具: Write | 创建 routers/products.py
+  ✏️ 使用工具: Edit | 更新 models.py (SQLAlchemy → SQLModel)
+  ✏️ 使用工具: Write | 创建 schemas.py (Pydantic 模型)
+  ✏️ 使用工具: Write | 创建 requirements.txt
+  🔧 使用工具: Bash | pip install -r requirements.txt
+  🔧 使用工具: Bash | python -m pytest tests/
+
+  ✅ 重构完成！
+  • 14/14 API 端点已迁移，路由完全兼容
+  • 自动生成 Pydantic schemas（类型安全）
+  • 已添加 OpenAPI 文档 (访问 /docs)
+  • 所有测试通过 ✓
+
+你> /技能
+  ✅ 全栈开发专家    ✅ 代码审查官
+  ❌ 前端大师       ❌ DevOps工程师
+  ❌ 数据库专家     ❌ 亚马逊运营专家
+  输入编号切换，按回车返回:
+```
+
+<br/>
+
+### ⚡ 30 秒上手
+
+```bash
+# 一行安装
+npm install -g claudezh
+
+# 一行启动
+claudezh
+
+# 一句话开始工作
+你> 帮我写一个用户管理的 REST API
+```
+
+就这么简单。不需要配置，不需要看文档，打开就能用中文写代码。
+
+<br/>
+
+### 🤔 为什么选 claudezh？
+
+| 痛点 | claudezh 的解决方案 |
+|:---|:---|
+| 😤 用英文和 AI 沟通，思路被打断？ | **全中文交互** — 命令、提示、输出全部中文，用母语思考不切换 |
+| 💸 Claude Code 订阅用不完？ | **免费复用你的订阅** — claudezh 零额外成本，直接调用你已有的 Claude Code |
+| 🔧 每次都要解释项目背景？ | **12 个内置技能** — 前端、后端、DevOps、电商... AI 秒懂你的领域 |
+
+<br/>
+
+### ⭐ Star 趋势
+
+如果 claudezh 对你有帮助，请给我们一个 ⭐
+
+**每一个 Star 都是对中文开发者社区的支持！**
+
+[![Star History](https://api.star-history.com/svg?repos=whaleaicode/claudezh&type=Date)](https://github.com/whaleaicode/claudezh)
+
+---
+
+<br/>
+
 ## 简体中文
 
 ### 为什么需要 claudezh？
