@@ -78,6 +78,24 @@ COMMAND_MAP = {
     "/switch": "switch_mode",
     "/技能": "skills",
     "/skills": "skills",
+    "/思考": "thinking",
+    "/think": "thinking",
+    "/强度": "effort",
+    "/effort": "effort",
+    "/审计": "audit",
+    "/audit": "audit",
+    "/笔记": "notes",
+    "/notes": "notes",
+    "/会话": "sessions",
+    "/sessions": "sessions",
+    "/恢复": "resume",
+    "/resume": "resume",
+    "/分支": "fork",
+    "/fork": "fork",
+    "/撤销": "undo",
+    "/undo": "undo",
+    "/检查点": "checkpoints",
+    "/checkpoints": "checkpoints",
 }
 
 # ---------------------------------------------------------------------------
@@ -113,6 +131,15 @@ class CLIState:
         }
         self.backend = detect_backend(backend_config)
 
+        # 从配置恢复思考模式和推理强度
+        thinking_mode = self.config.get("thinking_mode", "auto")
+        if thinking_mode and hasattr(self.backend, "set_thinking"):
+            self.backend.set_thinking(thinking_mode)
+
+        effort_level = self.config.get("effort_level")
+        if effort_level and hasattr(self.backend, "set_effort"):
+            self.backend.set_effort(effort_level)
+
 
 # ---------------------------------------------------------------------------
 # Banner
@@ -139,8 +166,20 @@ def print_banner(state: CLIState):
     info_lines.append(f"  |  ", style="dim")
     info_lines.append(f"{mode_label}\n", style="bold magenta")
     info_lines.append(f"  模式: ", style="dim")
-    info_lines.append(f"{backend_label}\n", style="bold cyan")
-    info_lines.append(f"  {t('welcome.tip')}", style="dim italic")
+    info_lines.append(f"{backend_label}", style="bold cyan")
+
+    # 思考模式 & 推理强度
+    if state.backend and hasattr(state.backend, "thinking_mode"):
+        thinking_label = t(f"thinking.{state.backend.thinking_mode}")
+        effort_label = t(f"effort.{state.backend.effort_level}")
+        info_lines.append(f"  |  ", style="dim")
+        info_lines.append(f"{t('thinking.title')}: ", style="dim")
+        info_lines.append(f"{thinking_label}", style="yellow")
+        info_lines.append(f"  |  ", style="dim")
+        info_lines.append(f"{t('effort.title')}: ", style="dim")
+        info_lines.append(f"{effort_label}", style="yellow")
+
+    info_lines.append(f"\n  {t('welcome.tip')}", style="dim italic")
     info_lines.append(f"\n  提示: /自动 切换自动模式 | /安全 切换安全模式 | /切换 切换后端模式", style="dim")
 
     panel = Panel(
@@ -176,7 +215,16 @@ def cmd_help(state: CLIState):
         ("/自动", "自动模式 — AI 可自动执行编辑操作"),
         ("/安全", "安全模式 — 危险操作前需确认（默认）"),
         ("/切换  /switch", "切换后端模式 (订阅/API)"),
+        ("/思考  /think", "cmd.thinking"),
+        ("/强度  /effort", "cmd.effort"),
         ("/技能  /skills", "cmd.skills"),
+        ("/会话  /sessions", "cmd.sessions"),
+        ("/恢复  /resume", "cmd.resume"),
+        ("/分支  /fork", "cmd.fork"),
+        ("/审计  /audit", "cmd.audit"),
+        ("/笔记  /notes", "快速笔记 — 添加/查看/搜索笔记"),
+        ("/撤销  /undo", "cmd.undo"),
+        ("/检查点  /checkpoints", "cmd.checkpoints"),
         ("/退出  /exit", "cmd.exit"),
     ]
     for names, key in cmds:
@@ -219,6 +267,14 @@ def cmd_settings(state: CLIState):
 
     backend_label = state.backend.get_mode_name() if state.backend else "未初始化"
     table.add_row("backend_mode", backend_label)
+
+    # 思考模式 & 推理强度
+    if state.backend and hasattr(state.backend, "thinking_mode"):
+        thinking_label = t(f"thinking.{state.backend.thinking_mode}")
+        table.add_row(t("thinking.title"), thinking_label)
+    if state.backend and hasattr(state.backend, "effort_level"):
+        effort_label = t(f"effort.{state.backend.effort_level}")
+        table.add_row(t("effort.title"), effort_label)
 
     console.print(table)
 
@@ -468,6 +524,85 @@ def cmd_skills(state: CLIState):
         console.print("[yellow]>> 无效选择[/yellow]")
 
 
+def cmd_thinking(state: CLIState, user_input: str = ""):
+    """Control thinking mode: auto / deep / off."""
+    if not state.backend or not hasattr(state.backend, "set_thinking"):
+        console.print("[yellow]>> 当前后端不支持思考模式控制[/yellow]")
+        return
+
+    # 解析参数
+    parts = user_input.split()
+    arg = parts[1] if len(parts) > 1 else ""
+
+    # 中文 → 英文映射
+    mode_map = {
+        "深度": "deep", "deep": "deep",
+        "自动": "auto", "auto": "auto",
+        "关闭": "off", "off": "off",
+    }
+
+    if not arg:
+        # 显示当前状态
+        current = state.backend.thinking_mode
+        label = t(f"thinking.{current}")
+        console.print(f"[bold cyan]{t('thinking.current', mode=label)}[/bold cyan]")
+        console.print(f"[dim]{t('thinking.usage')}[/dim]")
+        return
+
+    mode = mode_map.get(arg)
+    if not mode:
+        console.print(f"[yellow]>> 无效参数: {arg}[/yellow]")
+        console.print(f"[dim]{t('thinking.usage')}[/dim]")
+        return
+
+    state.backend.set_thinking(mode)
+    state.config["thinking_mode"] = mode
+    save_config(state.config)
+
+    label = t(f"thinking.{mode}")
+    console.print(f"[bold green]>> {t('thinking.switched', mode=label)}[/bold green]")
+
+
+def cmd_effort(state: CLIState, user_input: str = ""):
+    """Control effort level: low / medium / high / max."""
+    if not state.backend or not hasattr(state.backend, "set_effort"):
+        console.print("[yellow]>> 当前后端不支持推理强度控制[/yellow]")
+        return
+
+    # 解析参数
+    parts = user_input.split()
+    arg = parts[1] if len(parts) > 1 else ""
+
+    # 中文 → 英文映射
+    level_map = {
+        "低": "low", "low": "low",
+        "中": "medium", "medium": "medium",
+        "高": "high", "high": "high",
+        "最大": "max", "max": "max",
+    }
+
+    if not arg:
+        # 显示当前状态
+        current = state.backend.effort_level
+        label = t(f"effort.{current}")
+        console.print(f"[bold cyan]{t('effort.current', level=label)}[/bold cyan]")
+        console.print(f"[dim]{t('effort.usage')}[/dim]")
+        return
+
+    level = level_map.get(arg)
+    if not level:
+        console.print(f"[yellow]>> 无效参数: {arg}[/yellow]")
+        console.print(f"[dim]{t('effort.usage')}[/dim]")
+        return
+
+    state.backend.set_effort(level)
+    state.config["effort_level"] = level
+    save_config(state.config)
+
+    label = t(f"effort.{level}")
+    console.print(f"[bold green]>> {t('effort.switched', level=label)}[/bold green]")
+
+
 def cmd_switch_mode(state: CLIState):
     """Toggle between SDK and API backend modes."""
     if not state.backend:
@@ -506,6 +641,372 @@ def cmd_switch_mode(state: CLIState):
         console.print("[yellow]>> 当前后端不支持切换[/yellow]")
 
 
+
+def cmd_audit(state: CLIState):
+    """显示审计日志 -- 最近的工具操作记录。"""
+    from .hooks import get_audit_entries, AUDIT_LOG_PATH
+
+    entries = get_audit_entries(count=20)
+
+    if not entries:
+        console.print("[dim]暂无审计记录[/dim]")
+        console.print(f"[dim]日志路径: {AUDIT_LOG_PATH}[/dim]")
+        return
+
+    table = Table(
+        title=t("audit.title"),
+        border_style="cyan",
+        show_lines=False,
+    )
+    table.add_column("时间", style="dim", min_width=19)
+    table.add_column("工具", style="cyan", min_width=10)
+    table.add_column("操作", style="white", min_width=30)
+    table.add_column("状态", style="green", min_width=7)
+
+    for entry in entries:
+        try:
+            parts = entry.split(" | ")
+            ts = parts[0][1:20]
+            tool = parts[0].split("TOOL: ")[1] if "TOOL: " in parts[0] else "?"
+            inp = parts[1].replace("INPUT: ", "") if len(parts) > 1 else ""
+            status = parts[2].replace("STATUS: ", "") if len(parts) > 2 else ""
+            status_style = "green" if status == "success" else "red" if status == "blocked" else "yellow"
+            table.add_row(ts, tool, inp[:50], f"[{status_style}]{status}[/{status_style}]")
+        except Exception:
+            table.add_row("", "", entry[:60], "")
+
+    console.print(table)
+    console.print(f"[dim]日志路径: {AUDIT_LOG_PATH}[/dim]")
+    console.print(f"[dim]共 {len(entries)} 条记录 (最近)[/dim]")
+
+
+
+def _format_session_time(timestamp_ms: int) -> str:
+    """Format millisecond timestamp to readable date/time."""
+    from datetime import datetime
+    try:
+        dt = datetime.fromtimestamp(timestamp_ms / 1000)
+        return dt.strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return "???"
+
+
+def _get_session_title(session) -> str:
+    """Extract a display title from a session object."""
+    title = session.custom_title or session.summary or session.first_prompt or ""
+    # Truncate long titles
+    title = title.replace("\n", " ").strip()
+    if len(title) > 50:
+        title = title[:47] + "..."
+    return title or "(无标题)"
+
+
+def _show_sessions(state: CLIState, limit: int = 20) -> list:
+    """Display session list and return sessions. Returns empty list if not available."""
+    from .backend import SDKBackend
+
+    if not state.backend or not isinstance(state.backend, SDKBackend):
+        console.print(f"[yellow]>> {t('sessions.not_available')}[/yellow]")
+        return []
+
+    sessions = state.backend.list_sessions(limit=limit)
+    if not sessions:
+        console.print(f"[dim]{t('sessions.empty')}[/dim]")
+        return []
+
+    console.print(f"[bold cyan]{t('sessions.title')}:[/bold cyan]")
+    console.print()
+    for i, s in enumerate(sessions, 1):
+        time_str = _format_session_time(s.last_modified)
+        title = _get_session_title(s)
+        cwd_str = f"  ({s.cwd})" if s.cwd else ""
+        console.print(f"  [dim][{i:>2}][/dim] {time_str}  [cyan]\u201c{title}\u201d[/cyan]{cwd_str}")
+
+    console.print()
+    return sessions
+
+
+def _pick_session(state: CLIState, arg: str = "", sessions: list | None = None) -> str | None:
+    """Let user pick a session. Returns session_id or None."""
+    # If arg is a number, use it directly
+    if arg.strip().isdigit():
+        idx = int(arg.strip())
+        if sessions is None:
+            sessions = _show_sessions(state)
+        if 1 <= idx <= len(sessions):
+            return sessions[idx - 1].session_id
+        else:
+            console.print("[yellow]>> 无效编号[/yellow]")
+            return None
+
+    # Show list and prompt
+    if sessions is None:
+        sessions = _show_sessions(state)
+    if not sessions:
+        return None
+
+    console.print(f"[dim]{t('sessions.pick_prompt')}[/dim]")
+    try:
+        choice = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return None
+
+    if not choice:
+        return None
+
+    if choice.isdigit() and 1 <= int(choice) <= len(sessions):
+        return sessions[int(choice) - 1].session_id
+    else:
+        console.print("[yellow]>> 无效选择[/yellow]")
+        return None
+
+
+def cmd_sessions(state: CLIState, arg: str = ""):
+    """List recent sessions and optionally resume one."""
+    sessions = _show_sessions(state)
+    if not sessions:
+        return
+
+    session_id = _pick_session(state, sessions=sessions)
+    if session_id:
+        _do_resume(state, session_id, fork=False)
+
+
+def cmd_resume(state: CLIState, arg: str = ""):
+    """Resume a past session."""
+    session_id = _pick_session(state, arg=arg)
+    if session_id:
+        _do_resume(state, session_id, fork=False)
+
+
+def cmd_fork(state: CLIState, arg: str = ""):
+    """Fork from a past session (non-destructive)."""
+    session_id = _pick_session(state, arg=arg)
+    if session_id:
+        _do_resume(state, session_id, fork=True)
+
+
+def _do_resume(state: CLIState, session_id: str, fork: bool = False):
+    """Actually resume/fork a session and send initial prompt."""
+    from .backend import SDKBackend
+
+    if not state.backend or not isinstance(state.backend, SDKBackend):
+        console.print(f"[yellow]>> {t('sessions.not_available')}[/yellow]")
+        return
+
+    state.backend.resume_session(session_id, fork=fork)
+
+    action = t('sessions.forked') if fork else t('sessions.resumed')
+    console.print(f"[bold green]>> {action}: {session_id[:12]}...[/bold green]")
+    console.print("[dim]输入你的下一条消息继续对话[/dim]")
+
+
+def cmd_undo(state: CLIState):
+    """Undo the last AI file modification using checkpoints."""
+    from .backend import SDKBackend
+    if not state.backend or not isinstance(state.backend, SDKBackend):
+        console.print("[yellow]>> 撤销仅在 SDK 模式下可用[/yellow]")
+        return
+    cp = state.backend.checkpoint_mgr
+    checkpoints = cp.list_checkpoints()
+    if not checkpoints:
+        console.print("[dim]没有可用的检查点[/dim]")
+        return
+    latest = checkpoints[0]
+    try:
+        cp.undo(latest.checkpoint_id)
+        console.print(f"[bold green]>> 已撤销到检查点: {latest.checkpoint_id}[/bold green]")
+    except Exception as e:
+        console.print(f"[red]>> 撤销失败: {e}[/red]")
+
+
+def cmd_checkpoints(state: CLIState):
+    """List available file checkpoints."""
+    from .backend import SDKBackend
+    if not state.backend or not isinstance(state.backend, SDKBackend):
+        console.print("[yellow]>> 检查点仅在 SDK 模式下可用[/yellow]")
+        return
+    cp = state.backend.checkpoint_mgr
+    checkpoints = cp.list_checkpoints()
+    if not checkpoints:
+        console.print("[dim]没有可用的检查点[/dim]")
+        return
+    table = Table(title="文件检查点", border_style="cyan")
+    table.add_column("#", style="dim", width=4)
+    table.add_column("ID", style="cyan")
+    table.add_column("时间", style="white")
+    table.add_column("文件数", style="yellow", justify="right")
+    for i, cp_info in enumerate(checkpoints, 1):
+        created = getattr(cp_info, 'created_at', '?')
+        files = str(len(getattr(cp_info, 'modified_files', [])))
+        table.add_row(str(i), cp_info.checkpoint_id[:12], str(created), files)
+    console.print(table)
+
+
+def cmd_notes(state: CLIState):
+    """Quick notes management -- add, list, or search notes."""
+    import asyncio as _asyncio
+    from .mcp_tools import _note_add, _note_list, _note_search
+
+    console.print("[bold cyan]快速笔记 / Quick Notes[/bold cyan]")
+    console.print("  1. 添加笔记")
+    console.print("  2. 查看近期笔记")
+    console.print("  3. 搜索笔记")
+    console.print("  0. 返回")
+    console.print()
+
+    try:
+        choice = input("选择 / Pick: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return
+
+    if choice == "1":
+        try:
+            text = input("笔记内容: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            return
+        if text:
+            result = _asyncio.run(_note_add({"text": text}))
+            msg = result["content"][0]["text"]
+            console.print(f"[green]>> {msg}[/green]")
+        else:
+            console.print("[yellow]>> 内容为空，已取消[/yellow]")
+
+    elif choice == "2":
+        result = _asyncio.run(_note_list({"days": 7}))
+        msg = result["content"][0]["text"]
+        console.print(msg)
+
+    elif choice == "3":
+        try:
+            keyword = input("搜索关键词: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            return
+        if keyword:
+            result = _asyncio.run(_note_search({"keyword": keyword}))
+            msg = result["content"][0]["text"]
+            console.print(msg)
+        else:
+            console.print("[yellow]>> 关键词为空，已取消[/yellow]")
+
+
+
+
+def cmd_undo(state: CLIState):
+    """Undo the last file changes made by AI."""
+    if not state.backend:
+        console.print("[red]>> 后端未初始化[/red]")
+        return
+
+    mgr = state.backend.checkpoint_mgr
+    checkpoints = mgr.list_checkpoints()
+
+    if not checkpoints:
+        console.print(f"[yellow]>> {t('undo.no_checkpoints')}[/yellow]")
+        return
+
+    latest = checkpoints[0]
+    file_count = len(latest.files_backed_up) + len(latest.files_created)
+
+    console.print()
+    console.print(f"[bold yellow]{t('undo.confirm_title')}[/bold yellow]")
+    console.print(f"  {t('undo.time')}: [cyan]{latest.time_str}[/cyan]")
+    console.print(f"  {t('undo.prompt')}: [dim]{latest.prompt_preview}[/dim]")
+    console.print(f"  {t('undo.files')}: [cyan]{file_count}[/cyan]")
+
+    if latest.files_backed_up:
+        for f in latest.files_backed_up:
+            console.print(f"    [dim][恢复] {f}[/dim]")
+    if latest.files_created:
+        for f in latest.files_created:
+            console.print(f"    [dim][删除] {f}[/dim]")
+
+    console.print()
+    try:
+        answer = input(f"{t('undo.confirm_prompt')} (y/n): ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        console.print(f"[dim]>> {t('undo.cancelled')}[/dim]")
+        return
+
+    if answer not in ('y', 'yes', '是'):
+        console.print(f"[dim]>> {t('undo.cancelled')}[/dim]")
+        return
+
+    success, msg, reverted = mgr.undo()
+    if success:
+        console.print(f"[bold green]>> {msg}[/bold green]")
+        for f in reverted:
+            console.print(f"  [green]{f}[/green]")
+    else:
+        console.print(f"[red]>> {msg}[/red]")
+
+
+def cmd_checkpoints(state: CLIState):
+    """Show available file checkpoints."""
+    if not state.backend:
+        console.print("[red]>> 后端未初始化[/red]")
+        return
+
+    mgr = state.backend.checkpoint_mgr
+    checkpoints = mgr.list_checkpoints()
+
+    if not checkpoints:
+        console.print(f"[dim]{t('undo.no_checkpoints')}[/dim]")
+        return
+
+    table = Table(title=t('checkpoints.title'), border_style='cyan', show_lines=False)
+    table.add_column('#', style='dim', width=4)
+    table.add_column(t('checkpoints.time'), style='cyan', min_width=20)
+    table.add_column(t('checkpoints.prompt'), style='white', min_width=30)
+    table.add_column(t('checkpoints.files'), style='yellow', justify='right', width=8)
+
+    for i, ckpt in enumerate(checkpoints, 1):
+        file_count = len(ckpt.files_backed_up) + len(ckpt.files_created)
+        table.add_row(str(i), ckpt.time_str, ckpt.prompt_preview, str(file_count))
+
+    console.print(table)
+    console.print()
+    console.print(f"[dim]{t('checkpoints.undo_tip')}[/dim]")
+
+    try:
+        choice = input(f"{t('checkpoints.select_prompt')} ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return
+
+    if not choice or choice == '0':
+        return
+
+    if choice.isdigit() and 1 <= int(choice) <= len(checkpoints):
+        target = checkpoints[int(choice) - 1]
+        file_count = len(target.files_backed_up) + len(target.files_created)
+
+        console.print()
+        console.print(f"[bold yellow]{t('undo.confirm_title')}[/bold yellow]")
+        console.print(f"  {t('undo.time')}: [cyan]{target.time_str}[/cyan]")
+        console.print(f"  {t('undo.prompt')}: [dim]{target.prompt_preview}[/dim]")
+        console.print(f"  {t('undo.files')}: [cyan]{file_count}[/cyan]")
+        console.print()
+
+        try:
+            answer = input(f"{t('undo.confirm_prompt')} (y/n): ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            return
+
+        if answer not in ('y', 'yes', '是'):
+            console.print(f"[dim]>> {t('undo.cancelled')}[/dim]")
+            return
+
+        success, msg, reverted = mgr.undo(target.checkpoint_id)
+        if success:
+            console.print(f"[bold green]>> {msg}[/bold green]")
+            for f in reverted:
+                console.print(f"  [green]{f}[/green]")
+        else:
+            console.print(f"[red]>> {msg}[/red]")
+    else:
+        console.print("[yellow]>> 无效选择[/yellow]")
+
+
 # Command dispatch table
 COMMANDS = {
     "help": cmd_help,
@@ -521,6 +1022,15 @@ COMMANDS = {
     "safe_mode": cmd_safe_mode,
     "switch_mode": cmd_switch_mode,
     "skills": cmd_skills,
+    "thinking": cmd_thinking,
+    "effort": cmd_effort,
+    "audit": cmd_audit,
+    "notes": cmd_notes,
+    "sessions": cmd_sessions,
+    "resume": cmd_resume,
+    "fork": cmd_fork,
+    "undo": cmd_undo,
+    "checkpoints": cmd_checkpoints,
 }
 
 
@@ -586,7 +1096,18 @@ async def chat_async(user_input: str, state: CLIState):
                     console.print(result_panel)
 
             elif event.type == "thinking":
-                console.print(f"  [dim italic]>> 思考中...[/dim italic]")
+                # 深度思考模式下显示增强指示器
+                thinking_mode = getattr(state.backend, "thinking_mode", "auto")
+                if thinking_mode == "deep":
+                    console.print(f"  [dim italic]>> {t('thinking.deep_indicator')}[/dim italic]")
+                    if event.text and len(event.text) > 0:
+                        # 显示思考内容摘要（前100字）
+                        preview = event.text[:100].replace("\n", " ")
+                        if len(event.text) > 100:
+                            preview += "..."
+                        console.print(f"  [dim]   {preview}[/dim]")
+                else:
+                    console.print(f"  [dim italic]>> {t('thinking')}[/dim italic]")
 
             elif event.type == "done":
                 if state.config.get("show_token_usage") and event.usage:
@@ -685,7 +1206,16 @@ def run():
                 break
             handler = COMMANDS.get(cmd_key)
             if handler:
-                handler(state)
+                # 部分命令需要完整输入（含参数）
+                if cmd_key in ("thinking", "effort"):
+                    handler(state, user_input)
+                elif cmd_key in ("resume", "fork"):
+                    # Extract optional argument (e.g. /resume 3)
+                    parts = user_input.split(maxsplit=1)
+                    arg = parts[1] if len(parts) > 1 else ""
+                    handler(state, arg=arg)
+                else:
+                    handler(state)
             continue
 
         # Unknown slash command

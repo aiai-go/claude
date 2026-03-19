@@ -12,6 +12,8 @@ DEFAULT_CONFIG = {
     "max_turns": 50,
     "show_token_usage": True,
     "history_size": 100,
+    "thinking_mode": "auto",  # auto, deep, off
+    "effort_level": "medium",  # low, medium, high, max
 }
 
 

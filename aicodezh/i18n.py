@@ -225,6 +225,248 @@ _STRINGS = {
         "zh-TW": "已停用",
         "en": "Disabled",
     },
+    # Sessions
+    "sessions.title": {
+        "zh-CN": "最近的会话",
+        "zh-TW": "最近的會話",
+        "en": "Recent Sessions",
+    },
+    "sessions.empty": {
+        "zh-CN": "暂无历史会话",
+        "zh-TW": "暫無歷史會話",
+        "en": "No past sessions found",
+    },
+    "sessions.pick_prompt": {
+        "zh-CN": "输入编号恢复会话，按回车返回",
+        "zh-TW": "輸入編號恢復會話，按回車返回",
+        "en": "Enter number to resume, press Enter to go back",
+    },
+    "sessions.resumed": {
+        "zh-CN": "已恢复会话",
+        "zh-TW": "已恢復會話",
+        "en": "Session resumed",
+    },
+    "sessions.forked": {
+        "zh-CN": "已从会话分支",
+        "zh-TW": "已從會話分支",
+        "en": "Session forked",
+    },
+    "sessions.not_available": {
+        "zh-CN": "会话恢复仅在订阅模式下可用",
+        "zh-TW": "會話恢復僅在訂閱模式下可用",
+        "en": "Session resume is only available in SDK mode",
+    },
+    "cmd.sessions": {
+        "zh-CN": "列出/恢复历史会话",
+        "zh-TW": "列出/恢復歷史會話",
+        "en": "List/resume past sessions",
+    },
+    "cmd.resume": {
+        "zh-CN": "恢复历史会话",
+        "zh-TW": "恢復歷史會話",
+        "en": "Resume a past session",
+    },
+    "cmd.fork": {
+        "zh-CN": "从历史会话分支",
+        "zh-TW": "從歷史會話分支",
+        "en": "Fork from a past session",
+    },
+    # Thinking
+    "thinking.title": {
+        "zh-CN": "思考模式",
+        "zh-TW": "思考模式",
+        "en": "Thinking Mode",
+    },
+    "thinking.auto": {
+        "zh-CN": "自适应",
+        "zh-TW": "自適應",
+        "en": "Adaptive",
+    },
+    "thinking.deep": {
+        "zh-CN": "深度思考",
+        "zh-TW": "深度思考",
+        "en": "Deep Thinking",
+    },
+    "thinking.off": {
+        "zh-CN": "关闭",
+        "zh-TW": "關閉",
+        "en": "Off",
+    },
+    "thinking.current": {
+        "zh-CN": "当前思考模式: {mode}",
+        "zh-TW": "當前思考模式: {mode}",
+        "en": "Current thinking mode: {mode}",
+    },
+    "thinking.switched": {
+        "zh-CN": "已切换思考模式: {mode}",
+        "zh-TW": "已切換思考模式: {mode}",
+        "en": "Thinking mode switched: {mode}",
+    },
+    "thinking.usage": {
+        "zh-CN": "用法: /思考 [深度|自动|关闭]",
+        "zh-TW": "用法: /思考 [深度|自動|關閉]",
+        "en": "Usage: /think [deep|auto|off]",
+    },
+    "thinking.deep_indicator": {
+        "zh-CN": "深度思考中...",
+        "zh-TW": "深度思考中...",
+        "en": "Deep thinking...",
+    },
+    # Effort
+    "effort.title": {
+        "zh-CN": "推理强度",
+        "zh-TW": "推理強度",
+        "en": "Effort Level",
+    },
+    "effort.low": {
+        "zh-CN": "低",
+        "zh-TW": "低",
+        "en": "Low",
+    },
+    "effort.medium": {
+        "zh-CN": "中",
+        "zh-TW": "中",
+        "en": "Medium",
+    },
+    "effort.high": {
+        "zh-CN": "高",
+        "zh-TW": "高",
+        "en": "High",
+    },
+    "effort.max": {
+        "zh-CN": "最大",
+        "zh-TW": "最大",
+        "en": "Max",
+    },
+    "effort.current": {
+        "zh-CN": "当前推理强度: {level}",
+        "zh-TW": "當前推理強度: {level}",
+        "en": "Current effort level: {level}",
+    },
+    "effort.switched": {
+        "zh-CN": "已切换推理强度: {level}",
+        "zh-TW": "已切換推理強度: {level}",
+        "en": "Effort level switched: {level}",
+    },
+    "effort.usage": {
+        "zh-CN": "用法: /强度 [低|中|高|最大]",
+        "zh-TW": "用法: /強度 [低|中|高|最大]",
+        "en": "Usage: /effort [low|medium|high|max]",
+    },
+    # Commands
+    "cmd.thinking": {
+        "zh-CN": "控制思考模式 (深度/自动/关闭)",
+        "zh-TW": "控制思考模式 (深度/自動/關閉)",
+        "en": "Control thinking mode (deep/auto/off)",
+    },
+    "cmd.effort": {
+        "zh-CN": "控制推理强度 (低/中/高/最大)",
+        "zh-TW": "控制推理強度 (低/中/高/最大)",
+        "en": "Control effort level (low/medium/high/max)",
+    },
+    # 审计日志
+    "cmd.audit": {
+        "zh-CN": "查看操作审计日志",
+        "zh-TW": "查看操作審計日誌",
+        "en": "View audit log",
+    },
+    "audit.title": {
+        "zh-CN": "操作审计日志",
+        "zh-TW": "操作審計日誌",
+        "en": "Audit Log",
+    },
+    "audit.empty": {
+        "zh-CN": "暂无审计记录",
+        "zh-TW": "暫無審計記錄",
+        "en": "No audit entries",
+    },
+    # 安全钩子
+    "hooks.blocked": {
+        "zh-CN": "危险命令已被安全系统拦截",
+        "zh-TW": "危險命令已被安全系統攔截",
+        "en": "Dangerous command blocked by safety system",
+    },
+    "hooks.warning": {
+        "zh-CN": "安全警告",
+        "zh-TW": "安全警告",
+        "en": "Safety Warning",
+    },
+    # Undo / Checkpoints
+    "cmd.undo": {
+        "zh-CN": "撤销上次 AI 的文件修改",
+        "zh-TW": "撤銷上次 AI 的文件修改",
+        "en": "Undo last AI file changes",
+    },
+    "cmd.checkpoints": {
+        "zh-CN": "查看可用的文件检查点",
+        "zh-TW": "查看可用的文件檢查點",
+        "en": "View available file checkpoints",
+    },
+    "undo.no_checkpoints": {
+        "zh-CN": "没有可用的检查点",
+        "zh-TW": "沒有可用的檢查點",
+        "en": "No checkpoints available",
+    },
+    "undo.confirm_title": {
+        "zh-CN": "即将撤销以下修改:",
+        "zh-TW": "即將撤銷以下修改:",
+        "en": "About to undo the following changes:",
+    },
+    "undo.time": {
+        "zh-CN": "时间",
+        "zh-TW": "時間",
+        "en": "Time",
+    },
+    "undo.prompt": {
+        "zh-CN": "提示词",
+        "zh-TW": "提示詞",
+        "en": "Prompt",
+    },
+    "undo.files": {
+        "zh-CN": "涉及文件数",
+        "zh-TW": "涉及文件數",
+        "en": "Files affected",
+    },
+    "undo.confirm_prompt": {
+        "zh-CN": "确认撤销?",
+        "zh-TW": "確認撤銷?",
+        "en": "Confirm undo?",
+    },
+    "undo.cancelled": {
+        "zh-CN": "已取消",
+        "zh-TW": "已取消",
+        "en": "Cancelled",
+    },
+    "checkpoints.title": {
+        "zh-CN": "文件检查点",
+        "zh-TW": "文件檢查點",
+        "en": "File Checkpoints",
+    },
+    "checkpoints.time": {
+        "zh-CN": "时间",
+        "zh-TW": "時間",
+        "en": "Time",
+    },
+    "checkpoints.prompt": {
+        "zh-CN": "提示词",
+        "zh-TW": "提示詞",
+        "en": "Prompt",
+    },
+    "checkpoints.files": {
+        "zh-CN": "文件数",
+        "zh-TW": "文件數",
+        "en": "Files",
+    },
+    "checkpoints.undo_tip": {
+        "zh-CN": "输入编号撤销到该检查点 (0 返回)",
+        "zh-TW": "輸入編號撤銷到該檢查點 (0 返回)",
+        "en": "Enter number to undo to that checkpoint (0 to go back)",
+    },
+    "checkpoints.select_prompt": {
+        "zh-CN": "选择检查点:",
+        "zh-TW": "選擇檢查點:",
+        "en": "Select checkpoint:",
+    },
 }
 
 _current_locale: str | None = None

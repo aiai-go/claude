@@ -27,6 +27,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import AsyncIterator, Optional
 
+from .checkpoint import CheckpointManager, extract_modified_file
+
 logger = logging.getLogger("claudezh.backend")
 
 # ---------------------------------------------------------------------------
@@ -91,6 +93,13 @@ TOOL_NAME_ZH: dict[str, str] = {
     "get_git_info": "Git 信息",
 }
 
+# Merge custom MCP tool names
+try:
+    from .mcp_tools import MCP_TOOL_NAMES_ZH
+    TOOL_NAME_ZH.update(MCP_TOOL_NAMES_ZH)
+except ImportError:
+    pass
+
 # SDK 内置工具列表
 SDK_BUILTIN_TOOLS = ["Read", "Edit", "Write", "Bash", "Glob", "Grep"]
 
@@ -108,6 +117,9 @@ MAX_TOOL_ROUNDS = 20
 
 class Backend(ABC):
     """后端抽象接口 — 所有后端实现必须继承此类。"""
+
+    def __init__(self):
+        self.checkpoint_mgr = CheckpointManager()
 
     @abstractmethod
     async def ask(
@@ -165,10 +177,63 @@ class SDKBackend(Backend):
         cwd: str = ".",
         max_turns: int = 20,
     ):
+        super().__init__()
         self._model = model
         self._permission_mode = permission_mode
         self._cwd = cwd
         self._max_turns = max_turns
+        self._thinking_config = None  # None = SDK default (adaptive)
+        self._effort: str | None = None  # None = SDK default
+        # 会话恢复
+        self._resume_session_id: str | None = None
+        self._fork_session: bool = False
+
+    def set_thinking(self, mode: str, budget: int | None = None) -> None:
+        """设置思考模式。
+
+        mode:
+            "auto" → ThinkingConfigAdaptive (SDK 自适应)
+            "deep" → ThinkingConfigEnabled(budget_tokens=100000)
+            "off"  → ThinkingConfigDisabled
+        """
+        from claude_agent_sdk import (
+            ThinkingConfigAdaptive,
+            ThinkingConfigDisabled,
+            ThinkingConfigEnabled,
+        )
+
+        if mode == "auto":
+            self._thinking_config = ThinkingConfigAdaptive(type="adaptive")
+        elif mode == "deep":
+            tokens = budget or 100_000
+            self._thinking_config = ThinkingConfigEnabled(type="enabled", budget_tokens=tokens)
+        elif mode == "off":
+            self._thinking_config = ThinkingConfigDisabled(type="disabled")
+        else:
+            self._thinking_config = None
+
+    def set_effort(self, level: str) -> None:
+        """设置推理强度: low / medium / high / max。"""
+        if level in ("low", "medium", "high", "max"):
+            self._effort = level
+        else:
+            self._effort = None
+
+    @property
+    def thinking_mode(self) -> str:
+        """返回当前思考模式名称。"""
+        if self._thinking_config is None:
+            return "auto"
+        if isinstance(self._thinking_config, dict):
+            cfg_type = self._thinking_config.get("type", "adaptive")
+        else:
+            cfg_type = getattr(self._thinking_config, "type", "adaptive")
+        return {"adaptive": "auto", "enabled": "deep", "disabled": "off"}.get(cfg_type, "auto")
+
+    @property
+    def effort_level(self) -> str:
+        """返回当前推理强度。"""
+        return self._effort or "medium"
 
     # -- Backend 接口实现 --------------------------------------------------
 
@@ -193,14 +258,55 @@ class SDKBackend(Backend):
             )
             return
 
-        options = ClaudeAgentOptions(
-            model=self._model,
-            permission_mode=self._permission_mode,
-            max_turns=self._max_turns,
-            tools=list(SDK_BUILTIN_TOOLS),
-            cwd=self._cwd,
-            **({"system_prompt": system_prompt} if system_prompt else {}),
-        )
+        # 构建安全钩子配置
+        hooks_config = None
+        try:
+            from .hooks import build_hook_config
+            hooks_config = build_hook_config()
+            logger.debug("安全钩子已加载")
+        except Exception as e:
+            logger.debug(f"安全钩子加载失败 (非致命): {e}")
+
+        opt_kwargs = {
+            "model": self._model,
+            "permission_mode": self._permission_mode,
+            "max_turns": self._max_turns,
+            "tools": list(SDK_BUILTIN_TOOLS),
+            "cwd": self._cwd,
+            "enable_file_checkpointing": True,
+        }
+        if system_prompt:
+            opt_kwargs["system_prompt"] = system_prompt
+        if self._thinking_config is not None:
+            opt_kwargs["thinking"] = self._thinking_config
+        if self._effort is not None:
+            opt_kwargs["effort"] = self._effort
+
+        # 会话恢复
+        if self._resume_session_id:
+            opt_kwargs["resume"] = self._resume_session_id
+            if self._fork_session:
+                opt_kwargs["fork_session"] = True
+            # 一次性使用，恢复后清除
+            self._resume_session_id = None
+            self._fork_session = False
+
+        if hooks_config:
+            opt_kwargs["hooks"] = hooks_config
+
+        # 加载自定义 MCP 工具服务器
+        try:
+            from .mcp_tools import create_claudezh_mcp_server
+            mcp_server = create_claudezh_mcp_server()
+            opt_kwargs["mcp_servers"] = {"claudezh-tools": mcp_server}
+            logger.debug("自定义 MCP 工具已加载")
+        except Exception as e:
+            logger.debug(f"MCP 工具加载失败 (非致命): {e}")
+
+        options = ClaudeAgentOptions(**opt_kwargs)
+
+        # 开始文件检查点
+        self.checkpoint_mgr.begin_checkpoint(prompt)
 
         try:
             async for message in query(prompt=prompt, options=options):
@@ -220,6 +326,12 @@ class SDKBackend(Backend):
                             tool_input = (
                                 block.input if hasattr(block, "input") else {}
                             )
+
+                            # 检查点: 在文件修改前备份
+                            modified_file = extract_modified_file(tool_name, tool_input)
+                            if modified_file:
+                                self.checkpoint_mgr.track_file_modification(modified_file)
+
                             tool = ToolAction(
                                 name=tool_name,
                                 name_zh=TOOL_NAME_ZH.get(tool_name, tool_name),
@@ -259,6 +371,9 @@ class SDKBackend(Backend):
         except Exception as e:
             error_text = _classify_error(e)
             yield StreamEvent(type="error", text=error_text)
+        finally:
+            # 完成检查点 (无论成功失败都记录)
+            self.checkpoint_mgr.finish_checkpoint()
 
     def get_mode_name(self) -> str:
         return "订阅模式 (Claude Code)"
@@ -274,7 +389,44 @@ class SDKBackend(Backend):
 
     @property
     def available_tools(self) -> list[str]:
-        return list(SDK_BUILTIN_TOOLS)
+        tools = list(SDK_BUILTIN_TOOLS)
+        try:
+            from .mcp_tools import MCP_TOOL_NAMES_ZH
+            tools.extend(MCP_TOOL_NAMES_ZH.keys())
+        except ImportError:
+            pass
+        return tools
+
+    # -- 会话管理 (Session resume) ------------------------------------------
+
+    def list_sessions(self, limit: int = 20) -> list:
+        """列出最近的会话。返回 SDKSessionInfo 列表。"""
+        try:
+            from claude_agent_sdk import list_sessions
+            return list_sessions(limit=limit)
+        except ImportError:
+            logger.warning("claude-agent-sdk 未安装，无法列出会话")
+            return []
+        except Exception as e:
+            logger.warning(f"列出会话失败: {e}")
+            return []
+
+    def get_session_messages(self, session_id: str, limit: int = 50) -> list:
+        """获取指定会话的消息历史。返回 SessionMessage 列表。"""
+        try:
+            from claude_agent_sdk import get_session_messages
+            return get_session_messages(session_id=session_id, limit=limit)
+        except ImportError:
+            logger.warning("claude-agent-sdk 未安装，无法获取会话消息")
+            return []
+        except Exception as e:
+            logger.warning(f"获取会话消息失败: {e}")
+            return []
+
+    def resume_session(self, session_id: str, fork: bool = False) -> None:
+        """设置下一次 ask() 使用 resume 模式继续指定会话。"""
+        self._resume_session_id = session_id
+        self._fork_session = fork
 
 
 # ---------------------------------------------------------------------------
@@ -291,6 +443,14 @@ class APIBackend(Backend):
     危险工具 (write_file, run_command, run_python) 执行前会请求用户确认。
     """
 
+    # effort → max_tokens 映射 (API 模式下用 max_tokens 模拟强度)
+    EFFORT_MAX_TOKENS = {
+        "low": 1024,
+        "medium": 4096,
+        "high": 8192,
+        "max": 16384,
+    }
+
     def __init__(
         self,
         api_key: str,
@@ -299,12 +459,33 @@ class APIBackend(Backend):
         permission_mode: str = "default",
         timeout: float = 120.0,
     ):
+        super().__init__()
         self._api_key = api_key
         self._model = model
         self._max_tokens = max_tokens
+        self._base_max_tokens = max_tokens  # 保存原始值
         self._permission_mode = permission_mode
         self._timeout = timeout
         self._client = None
+        self._effort: str = "medium"
+
+    def set_thinking(self, mode: str, budget: int | None = None) -> None:
+        """API 模式下思考功能有限，仅做标记。"""
+        pass  # API 模式暂不支持 extended thinking
+
+    def set_effort(self, level: str) -> None:
+        """设置推理强度 — API 模式通过调整 max_tokens 模拟。"""
+        if level in self.EFFORT_MAX_TOKENS:
+            self._effort = level
+            self._max_tokens = self.EFFORT_MAX_TOKENS[level]
+
+    @property
+    def thinking_mode(self) -> str:
+        return "off"  # API 模式不支持 extended thinking
+
+    @property
+    def effort_level(self) -> str:
+        return self._effort
 
     def _ensure_client(self):
         """懒初始化 anthropic 客户端。"""
@@ -360,107 +541,119 @@ class APIBackend(Backend):
         if system_prompt:
             create_kwargs["system"] = system_prompt
 
+        # 开始文件检查点
+        self.checkpoint_mgr.begin_checkpoint(prompt)
+
         # 工具调用循环
         total_input = 0
         total_output = 0
 
-        for round_num in range(MAX_TOOL_ROUNDS):
-            try:
-                import anthropic as anthropic_mod
+        try:
+            for round_num in range(MAX_TOOL_ROUNDS):
+                try:
+                    import anthropic as anthropic_mod
 
-                response = self._client.messages.create(**create_kwargs)
-            except Exception as e:
-                yield StreamEvent(type="error", text=_classify_error(e))
-                return
+                    response = self._client.messages.create(**create_kwargs)
+                except Exception as e:
+                    yield StreamEvent(type="error", text=_classify_error(e))
+                    return
 
-            # 累计 token 用量
-            if response.usage:
-                total_input += response.usage.input_tokens
-                total_output += response.usage.output_tokens
+                # 累计 token 用量
+                if response.usage:
+                    total_input += response.usage.input_tokens
+                    total_output += response.usage.output_tokens
 
-            # 检查是否有工具调用
-            has_tool_use = False
-            tool_results = []
+                # 检查是否有工具调用
+                has_tool_use = False
+                tool_results = []
 
-            for block in response.content:
-                if block.type == "text":
-                    yield StreamEvent(type="text", text=block.text)
+                for block in response.content:
+                    if block.type == "text":
+                        yield StreamEvent(type="text", text=block.text)
 
-                elif block.type == "tool_use":
-                    has_tool_use = True
-                    tool_name = block.name
-                    tool_input = block.input
+                    elif block.type == "tool_use":
+                        has_tool_use = True
+                        tool_name = block.name
+                        tool_input = block.input
 
-                    tool = ToolAction(
-                        name=tool_name,
-                        name_zh=TOOL_NAME_ZH.get(tool_name, tool_name),
-                        input=tool_input,
-                    )
-                    yield StreamEvent(type="tool_use", tool=tool)
+                        # 检查点: 在文件修改前备份
+                        modified_file = extract_modified_file(tool_name, tool_input)
+                        if modified_file:
+                            self.checkpoint_mgr.track_file_modification(modified_file)
 
-                    # 执行工具
-                    result = await _execute_tool(
-                        tool_name, tool_input, self._permission_mode
-                    )
-                    tool.result = result
-
-                    yield StreamEvent(
-                        type="tool_result",
-                        tool=ToolAction(
+                        tool = ToolAction(
                             name=tool_name,
                             name_zh=TOOL_NAME_ZH.get(tool_name, tool_name),
                             input=tool_input,
-                            result=result[:500] if len(result) > 500 else result,
-                        ),
-                    )
+                        )
+                        yield StreamEvent(type="tool_use", tool=tool)
 
-                    tool_results.append(
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": result,
-                        }
-                    )
+                        # 执行工具
+                        result = await _execute_tool(
+                            tool_name, tool_input, self._permission_mode
+                        )
+                        tool.result = result
 
-                elif hasattr(block, "thinking") and block.type == "thinking":
-                    yield StreamEvent(
-                        type="thinking",
-                        text=getattr(block, "thinking", ""),
-                    )
+                        yield StreamEvent(
+                            type="tool_result",
+                            tool=ToolAction(
+                                name=tool_name,
+                                name_zh=TOOL_NAME_ZH.get(tool_name, tool_name),
+                                input=tool_input,
+                                result=result[:500] if len(result) > 500 else result,
+                            ),
+                        )
 
-            # 如果没有工具调用或 stop_reason 是 end_turn, 结束循环
-            if not has_tool_use or response.stop_reason == "end_turn":
-                break
+                        tool_results.append(
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": block.id,
+                                "content": result,
+                            }
+                        )
 
-            # 有工具调用 — 将 assistant 回复 + tool results 追加到 messages
-            # assistant 回复 (包含 tool_use blocks)
-            messages.append(
-                {
-                    "role": "assistant",
-                    "content": [
-                        _block_to_dict(b) for b in response.content
-                    ],
-                }
-            )
-            # tool results
-            messages.append({"role": "user", "content": tool_results})
+                    elif hasattr(block, "thinking") and block.type == "thinking":
+                        yield StreamEvent(
+                            type="thinking",
+                            text=getattr(block, "thinking", ""),
+                        )
 
-            # 更新 create_kwargs 的 messages
-            create_kwargs["messages"] = messages
-        else:
-            # 超过最大轮次
+                # 如果没有工具调用或 stop_reason 是 end_turn, 结束循环
+                if not has_tool_use or response.stop_reason == "end_turn":
+                    break
+
+                # 有工具调用 — 将 assistant 回复 + tool results 追加到 messages
+                # assistant 回复 (包含 tool_use blocks)
+                messages.append(
+                    {
+                        "role": "assistant",
+                        "content": [
+                            _block_to_dict(b) for b in response.content
+                        ],
+                    }
+                )
+                # tool results
+                messages.append({"role": "user", "content": tool_results})
+
+                # 更新 create_kwargs 的 messages
+                create_kwargs["messages"] = messages
+            else:
+                # 超过最大轮次
+                yield StreamEvent(
+                    type="error",
+                    text=f"工具调用超过最大轮次限制 ({MAX_TOOL_ROUNDS})，已终止。",
+                )
+
             yield StreamEvent(
-                type="error",
-                text=f"工具调用超过最大轮次限制 ({MAX_TOOL_ROUNDS})，已终止。",
+                type="done",
+                usage={
+                    "input_tokens": total_input,
+                    "output_tokens": total_output,
+                },
             )
-
-        yield StreamEvent(
-            type="done",
-            usage={
-                "input_tokens": total_input,
-                "output_tokens": total_output,
-            },
-        )
+        finally:
+            # 完成检查点 (无论成功失败都记录)
+            self.checkpoint_mgr.finish_checkpoint()
 
     def get_mode_name(self) -> str:
         return "API 模式 (独立)"
