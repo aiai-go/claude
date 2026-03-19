@@ -1,6 +1,6 @@
 {
   "name": "claudezh",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "全中文 AI 编程助手 - Chinese AI Coding Assistant powered by Claude",
   "bin": {
     "claudezh": "./bin/claudezh-wrapper.js"

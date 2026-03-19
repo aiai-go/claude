@@ -12,6 +12,16 @@ from .backend import TOOL_NAME_ZH, Backend, StreamEvent, detect_backend
 from .config import get_config_dir, load_config, save_config
 from .history import History
 from .i18n import get_locale, set_locale, t
+from .skills import (
+    SKILLS,
+    Skill,
+    complete_setup,
+    get_enabled_skills,
+    get_skill_system_prompt,
+    has_completed_setup,
+    list_skills_by_category,
+    toggle_skill,
+)
 from .templates import TEMPLATES, list_templates
 from .version import APP_NAME, APP_NAME_EN, VERSION
 
@@ -66,6 +76,8 @@ COMMAND_MAP = {
     "/安全": "safe_mode",
     "/切换": "switch_mode",
     "/switch": "switch_mode",
+    "/技能": "skills",
+    "/skills": "skills",
 }
 
 # ---------------------------------------------------------------------------
@@ -164,6 +176,7 @@ def cmd_help(state: CLIState):
         ("/自动", "自动模式 — AI 可自动执行编辑操作"),
         ("/安全", "安全模式 — 危险操作前需确认（默认）"),
         ("/切换  /switch", "切换后端模式 (订阅/API)"),
+        ("/技能  /skills", "cmd.skills"),
         ("/退出  /exit", "cmd.exit"),
     ]
     for names, key in cmds:
@@ -353,6 +366,108 @@ def cmd_safe_mode(state: CLIState):
     console.print("[bold yellow]>> 已切换到安全模式[/bold yellow] — 危险操作前需要确认")
 
 
+def first_run_setup():
+    """Interactive first-run skill selection. Runs when skills.json doesn't exist."""
+    # Header
+    welcome_box = Panel(
+        f"     {t('skills.welcome_title')} \U0001f389\n"
+        f"     {t('skills.welcome_subtitle')}",
+        border_style="cyan",
+        padding=(0, 2),
+    )
+    console.print(welcome_box)
+    console.print()
+
+    recommended = {"fullstack", "git"}
+    categories = list_skills_by_category()
+    all_keys: list[str] = []  # ordered list for numbering
+    selected: set[str] = set()
+
+    idx = 0
+    for cat_name, skills in categories.items():
+        console.print(f"[bold cyan]{cat_name}:[/bold cyan]")
+        for skill in skills:
+            idx += 1
+            all_keys.append(skill.key)
+            rec_tag = f" [green]({t('skills.recommended')})[/green]" if skill.key in recommended else ""
+            console.print(f"  [{idx}] {skill.icon} {skill.name} — {skill.description}{rec_tag}")
+
+            # Default for recommended skills
+            default = "y" if skill.key in recommended else "n"
+            try:
+                answer = input(f"         {t('skills.enable_prompt')} (y/n) [{default}]: ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                answer = ""
+
+            if not answer:
+                answer = default
+            if answer in ("y", "yes", "是"):
+                selected.add(skill.key)
+        console.print()
+
+    # Save and finish
+    complete_setup(list(selected))
+
+    # Summary
+    enabled_names = [SKILLS[k].name for k in all_keys if k in selected]
+    if enabled_names:
+        console.print(
+            f"[bold green]{t('skills.enabled_summary', count=len(enabled_names))}: "
+            f"{', '.join(enabled_names)}[/bold green]"
+        )
+    else:
+        console.print("[dim]未启用任何技能[/dim]")
+
+    console.print(f"[dim]{t('skills.manage_tip')}[/dim]")
+    console.print()
+
+
+def cmd_skills(state: CLIState):
+    """Show and manage AI skills."""
+    categories = list_skills_by_category()
+    all_keys: list[str] = []
+
+    table = Table(title=t("skills.title"), border_style="cyan", show_lines=False)
+    table.add_column("#", style="dim", width=4)
+    table.add_column("状态", width=4)
+    table.add_column("技能", style="cyan", min_width=16)
+    table.add_column("说明", style="white")
+
+    idx = 0
+    for cat_name, skills in categories.items():
+        # Category header row
+        table.add_row("", "", f"[bold]{cat_name}[/bold]", "")
+        for skill in skills:
+            idx += 1
+            all_keys.append(skill.key)
+            status = "[green]✅[/green]" if skill.enabled else "[dim]❌[/dim]"
+            table.add_row(str(idx), status, f"{skill.icon} {skill.name}", skill.description)
+
+    console.print(table)
+    console.print()
+
+    # Toggle prompt
+    console.print(f"[dim]{t('skills.toggle_prompt')}[/dim]")
+    try:
+        choice = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+        return
+
+    if not choice or choice == "0":
+        return
+
+    if choice.isdigit() and 1 <= int(choice) <= len(all_keys):
+        key = all_keys[int(choice) - 1]
+        new_state = toggle_skill(key)
+        skill = SKILLS[key]
+        if new_state:
+            console.print(f"[bold green]>> {t('skills.toggled_on')}: {skill.icon} {skill.name}[/bold green]")
+        else:
+            console.print(f"[yellow]>> {t('skills.toggled_off')}: {skill.icon} {skill.name}[/yellow]")
+    else:
+        console.print("[yellow]>> 无效选择[/yellow]")
+
+
 def cmd_switch_mode(state: CLIState):
     """Toggle between SDK and API backend modes."""
     if not state.backend:
@@ -405,6 +520,7 @@ COMMANDS = {
     "auto_mode": cmd_auto_mode,
     "safe_mode": cmd_safe_mode,
     "switch_mode": cmd_switch_mode,
+    "skills": cmd_skills,
 }
 
 
@@ -423,6 +539,11 @@ async def chat_async(user_input: str, state: CLIState):
 
     # 构建系统提示: 用户选的模板优先，否则用默认中文提示
     system_prompt = state.system_prompt or DEFAULT_SYSTEM_PROMPT
+
+    # 追加启用的技能系统提示
+    skill_prompt = get_skill_system_prompt()
+    if skill_prompt:
+        system_prompt = system_prompt.rstrip() + "\n\n" + skill_prompt
 
     # 构建历史消息列表
     history_messages = []
@@ -521,6 +642,10 @@ def run():
     lang = state.config.get("language", "auto")
     if lang != "auto":
         set_locale(lang)
+
+    # 首次运行: 技能选择
+    if not has_completed_setup():
+        first_run_setup()
 
     # 初始化后端
     try:

@@ -169,6 +169,62 @@ _STRINGS = {
         "zh-TW": "列出可用工具",
         "en": "List available tools",
     },
+    "cmd.skills": {
+        "zh-CN": "管理 AI 技能",
+        "zh-TW": "管理 AI 技能",
+        "en": "Manage AI skills",
+    },
+    # Skills
+    "skills.welcome_title": {
+        "zh-CN": "欢迎使用 claudezh!",
+        "zh-TW": "歡迎使用 claudezh!",
+        "en": "Welcome to claudezh!",
+    },
+    "skills.welcome_subtitle": {
+        "zh-CN": "让我们选择你需要的技能",
+        "zh-TW": "讓我們選擇你需要的技能",
+        "en": "Let's pick the skills you need",
+    },
+    "skills.enable_prompt": {
+        "zh-CN": "启用?",
+        "zh-TW": "啟用?",
+        "en": "Enable?",
+    },
+    "skills.recommended": {
+        "zh-CN": "推荐",
+        "zh-TW": "推薦",
+        "en": "recommended",
+    },
+    "skills.enabled_summary": {
+        "zh-CN": "已启用 {count} 个技能",
+        "zh-TW": "已啟用 {count} 個技能",
+        "en": "{count} skills enabled",
+    },
+    "skills.manage_tip": {
+        "zh-CN": "你可以随时用 /技能 命令管理技能",
+        "zh-TW": "你可以隨時用 /技能 命令管理技能",
+        "en": "You can manage skills anytime with /skills",
+    },
+    "skills.title": {
+        "zh-CN": "技能管理",
+        "zh-TW": "技能管理",
+        "en": "Skill Management",
+    },
+    "skills.toggle_prompt": {
+        "zh-CN": "输入编号切换技能 (0 返回)",
+        "zh-TW": "輸入編號切換技能 (0 返回)",
+        "en": "Enter number to toggle (0 to go back)",
+    },
+    "skills.toggled_on": {
+        "zh-CN": "已启用",
+        "zh-TW": "已啟用",
+        "en": "Enabled",
+    },
+    "skills.toggled_off": {
+        "zh-CN": "已禁用",
+        "zh-TW": "已停用",
+        "en": "Disabled",
+    },
 }
 
 _current_locale: str | None = None

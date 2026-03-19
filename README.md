@@ -68,6 +68,52 @@
 | **对话历史** | 自动保存、加载、压缩，跨会话连续工作 |
 | **项目感知** | 自动检测项目类型、语言、框架，给出更精准的建议 |
 | **危险命令拦截** | 内置安全策略，自动拦截 `rm -rf` 等危险操作 |
+| **12 个内置技能** | 覆盖 Web 开发、DevOps、数据 AI、电商、工具 5 大领域 |
+
+<br/>
+
+### Skills 技能系统
+
+claudezh 内置了 12 个领域专属的 AI 技能人格。每个技能赋予 AI 特定领域的专业知识和行为模式，让回答更精准、更专业。
+
+#### 可用技能
+
+| 图标 | 技能名称 | 英文名 | 分类 | 说明 |
+|:---:|:---|:---|:---|:---|
+| 🎨 | 前端工程师 | Frontend Engineer | Web 开发 | React/Vue/Next.js 前端开发专家 |
+| ⚙️ | 后端架构师 | Backend Architect | Web 开发 | Python/Node.js 后端开发，API 设计 |
+| 🔗 | 全栈开发者 | Fullstack Developer | Web 开发 | 前后端通吃，快速搭建完整项目 |
+| 🚀 | DevOps 工程师 | DevOps Engineer | DevOps | CI/CD、Docker、K8s 部署与运维 |
+| 🐧 | Linux 运维专家 | Linux SysAdmin | DevOps | 系统管理、Shell 脚本、故障排查 |
+| 📊 | 数据科学家 | Data Scientist | 数据 & AI | 数据分析、机器学习、可视化 |
+| 🤖 | AI 应用开发者 | AI App Developer | 数据 & AI | LLM 应用、RAG、Agent 架构 |
+| 📦 | 亚马逊运营专家 | Amazon Expert | 电商 | Listing 优化、广告策略、数据分析 |
+| 🛍️ | Shopify 建站专家 | Shopify Expert | 电商 | 主题开发、Liquid 模板、SEO 优化 |
+| 🔀 | Git 大师 | Git Master | 工具 | Git 工作流、分支策略、冲突解决 |
+| 🗄️ | 数据库专家 | Database Expert | 工具 | SQL 优化、数据库设计、运维调优 |
+| 🧪 | 测试工程师 | QA Engineer | 工具 | 单元测试、集成测试、TDD 实践 |
+
+#### 首次运行选择
+
+首次启动 claudezh 时，会自动弹出技能选择界面，让你勾选感兴趣的技能领域。选中的技能会增强 AI 在该领域的专业表现。
+
+#### 技能管理
+
+随时使用 `/技能` 命令管理已启用的技能：
+
+```
+[你] > /技能
+
+可用技能:
+  [x] 🎨 前端工程师
+  [ ] ⚙️ 后端架构师
+  [x] 📦 亚马逊运营专家
+  ...
+
+输入编号切换启用/禁用
+```
+
+技能系统通过注入领域专属的系统提示，让 AI 在回答时自动融入相关专业知识，无需每次手动描述背景。
 
 <br/>
 
@@ -199,7 +245,7 @@ python3 -m aicodezh
 claudezh
 
 # 你会看到这样的欢迎界面：
-# ┌─── AI 编程助手  v0.1.0 ──────────────────────┐
+# ┌─── AI 编程助手  v0.2.0 ──────────────────────┐
 # │  基于 Claude 大模型的智能编程终端              │
 # │  当前目录: /your/project                      │
 # │  语言: 简体中文  |  Model: claude-sonnet-4-6   │
@@ -617,6 +663,7 @@ claudezh brings the full power of Claude to your terminal with a Chinese-first i
 - **Built-in agentic tools** -- File read/write, code search (glob + regex), shell execution, Python execution, project analysis, and Git integration are available out of the box.
 - **Preset templates & agents** -- Code generation, review, bug fixing, refactoring, test writing, code explanation, Amazon Listing generation, and code translation templates. Specialized sub-agents (code reviewer, bug fixer, test writer) with curated system prompts.
 - **Permission control** -- Safe mode (confirms before destructive operations) and auto mode (fully autonomous). Toggle with `/safe` or `/auto`.
+- **12 built-in skills** -- Domain-specific AI personas across 5 categories: Web, DevOps, Data/AI, E-commerce, and Tools. Each skill enhances the AI with specialized expertise.
 - **Trilingual i18n** -- Full interface in `zh-CN`, `zh-TW`, and `en`. Auto-detected from system locale or set via `CLAUDEZH_LANG`.
 
 ### Installation
@@ -707,6 +754,30 @@ claudezh accepts input in any language. Chinese commands have English aliases:
 | /切换 | /switch | Switch backend (SDK/API) |
 | /历史 | /history | Conversation history |
 | /退出 | /exit | Exit |
+| /技能 | /skills | Manage AI skills |
+
+### Skills System
+
+claudezh ships with 12 built-in domain-specific AI skills across 5 categories. Each skill injects specialized system prompts that enhance the AI's expertise in that domain.
+
+| Icon | Skill | Category | Description |
+|:---:|:---|:---|:---|
+| 🎨 | Frontend Engineer | Web | React/Vue/Next.js, components, performance |
+| ⚙️ | Backend Architect | Web | Python/Node.js, API design, databases |
+| 🔗 | Fullstack Developer | Web | End-to-end development, rapid prototyping |
+| 🚀 | DevOps Engineer | DevOps | CI/CD, Docker, Kubernetes, cloud |
+| 🐧 | Linux SysAdmin | DevOps | Shell scripting, networking, troubleshooting |
+| 📊 | Data Scientist | Data/AI | pandas, sklearn, PyTorch, visualization |
+| 🤖 | AI App Developer | Data/AI | LLM apps, RAG, agents, prompt engineering |
+| 📦 | Amazon Expert | E-commerce | Listing optimization, PPC, data analysis |
+| 🛍️ | Shopify Expert | E-commerce | Theme dev, Liquid templates, SEO |
+| 🔀 | Git Master | Tools | Workflows, branching, conflict resolution |
+| 🗄️ | Database Expert | Tools | SQL optimization, PostgreSQL/Redis tuning |
+| 🧪 | QA Engineer | Tools | Unit/integration/E2E testing, TDD |
+
+**First run**: claudezh prompts you to select skills interactively.
+
+**Anytime**: Use `/技能` (or `/skills`) to enable/disable skills. Enabled skills automatically enhance the AI's responses with domain-specific knowledge.
 
 ### Architecture
 

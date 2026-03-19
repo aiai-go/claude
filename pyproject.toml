@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "claudezh"
-version = "0.1.0"
+version = "0.2.0"
 description = "AI 编程助手（中文版）— 基于 Claude 的智能编程终端工具"
 readme = "README.md"
 license = {text = "MIT"}
