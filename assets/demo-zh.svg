@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="580" viewBox="0 0 800 580">
+  <!-- Terminal window frame -->
+  <rect width="800" height="580" rx="10" fill="#1e1e2e"/>
+
+  <!-- Title bar -->
+  <rect width="800" height="35" rx="10" fill="#313244"/>
+  <rect y="25" width="800" height="10" fill="#313244"/>
+
+  <!-- Traffic lights -->
+  <circle cx="20" cy="17" r="6" fill="#f38ba8"/>
+  <circle cx="40" cy="17" r="6" fill="#f9e2af"/>
+  <circle cx="60" cy="17" r="6" fill="#a6e3a1"/>
+
+  <!-- Title text -->
+  <text x="400" y="22" text-anchor="middle" font-family="SF Mono, Menlo, monospace" font-size="12" fill="#a6adc8">claudezh — ~/my-project</text>
+
+  <!-- Banner -->
+  <text x="30" y="58" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89b4fa">╭────────────── </tspan>
+    <tspan fill="#89dceb" font-weight="bold">@aiai-go/claude v0.2.0</tspan>
+    <tspan fill="#89b4fa"> ──────────────╮</tspan>
+  </text>
+  <text x="30" y="76" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89b4fa">│  </tspan>
+    <tspan fill="#a6adc8" font-style="italic">基于 Claude 的智能编程终端</tspan>
+  </text>
+  <text x="30" y="94" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89b4fa">│  </tspan>
+    <tspan fill="#74c7ec">目录 </tspan>
+    <tspan fill="#cdd6f4">~/my-project</tspan>
+    <tspan fill="#74c7ec">  模式 </tspan>
+    <tspan fill="#cdd6f4">订阅 (Claude Max)</tspan>
+  </text>
+  <text x="30" y="112" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89b4fa">│  </tspan>
+    <tspan fill="#74c7ec">语言 </tspan>
+    <tspan fill="#cdd6f4">简体中文</tspan>
+    <tspan fill="#74c7ec">  模型 </tspan>
+    <tspan fill="#cdd6f4">claude-sonnet-4-6</tspan>
+  </text>
+  <text x="30" y="130" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89b4fa">│  </tspan>
+    <tspan fill="#74c7ec">技能 </tspan>
+    <tspan fill="#cdd6f4">全栈开发 · 代码审查 · Git魔法师</tspan>
+  </text>
+  <text x="30" y="148" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89b4fa">╰──────────────────────────────────────────────────╯</tspan>
+  </text>
+
+  <!-- User input -->
+  <text x="30" y="180" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#a6e3a1" font-weight="bold">[你]</tspan>
+    <tspan fill="#6c7086"> > </tspan>
+    <tspan fill="#cdd6f4">帮我把这个 Flask 项目重构成 FastAPI，保持 API 兼容</tspan>
+  </text>
+
+  <!-- AI response -->
+  <text x="30" y="210" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#a6e3a1" font-weight="bold">助手</tspan>
+    <tspan fill="#6c7086">: </tspan>
+    <tspan fill="#cdd6f4">好的，我来分析当前项目结构...</tspan>
+  </text>
+
+  <!-- Tool calls -->
+  <text x="30" y="238" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  🔍 使用工具: Glob</tspan>
+    <tspan fill="#6c7086"> | 扫描项目文件</tspan>
+  </text>
+  <text x="30" y="256" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  📖 使用工具: Read</tspan>
+    <tspan fill="#6c7086"> | 读取 app.py (245行)</tspan>
+  </text>
+  <text x="30" y="274" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  📖 使用工具: Read</tspan>
+    <tspan fill="#6c7086"> | 读取 models.py, routes/ (6个文件)</tspan>
+  </text>
+
+  <!-- Analysis result -->
+  <text x="30" y="302" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#cdd6f4">  分析完成。检测到:</tspan>
+  </text>
+  <text x="30" y="320" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#6c7086">  • Flask 应用，14 个 API 端点，JWT 认证</tspan>
+  </text>
+
+  <!-- Write operations -->
+  <text x="30" y="348" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  ✏️ 使用工具: Write</tspan>
+    <tspan fill="#6c7086"> | 创建 main.py (FastAPI 入口)</tspan>
+  </text>
+  <text x="30" y="366" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  ✏️ 使用工具: Write</tspan>
+    <tspan fill="#6c7086"> | 创建 routers/auth.py, users.py</tspan>
+  </text>
+  <text x="30" y="384" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  ✏️ 使用工具: Edit</tspan>
+    <tspan fill="#6c7086"> | 更新 models.py → SQLModel</tspan>
+  </text>
+  <text x="30" y="402" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#89dceb">  🔧 使用工具: Bash</tspan>
+    <tspan fill="#6c7086"> | pytest tests/ — 全部通过 ✓</tspan>
+  </text>
+
+  <!-- Success -->
+  <text x="30" y="432" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#a6e3a1">  ✅ 重构完成！</tspan>
+  </text>
+  <text x="30" y="450" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#6c7086">  • 14/14 API 已迁移，路由完全兼容</tspan>
+  </text>
+  <text x="30" y="468" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#6c7086">  • 自动生成 Pydantic schemas，所有测试通过</tspan>
+  </text>
+
+  <!-- Usage bar -->
+  <text x="30" y="498" font-family="SF Mono, Menlo, Consolas, monospace" font-size="11">
+    <tspan fill="#6c7086">  📊 5h: 23% </tspan>
+    <tspan fill="#a6e3a1">████</tspan>
+    <tspan fill="#45475a">░░░░░░░░░░░░░░</tspan>
+    <tspan fill="#6c7086">  |  本周: 8% </tspan>
+    <tspan fill="#a6e3a1">█</tspan>
+    <tspan fill="#45475a">░░░░░░░░░░░░░░░░</tspan>
+  </text>
+
+  <!-- Next prompt with blinking cursor -->
+  <text x="30" y="530" font-family="SF Mono, Menlo, Consolas, monospace" font-size="12">
+    <tspan fill="#a6e3a1" font-weight="bold">[你]</tspan>
+    <tspan fill="#6c7086"> > </tspan>
+    <tspan fill="#f5c2e7">▌</tspan>
+  </text>
+  <rect x="68" y="519" width="2" height="14" fill="#f5c2e7">
+    <animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+</svg>

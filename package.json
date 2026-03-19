@@ -1,0 +1,31 @@
+{
+  "name": "@aiai-go/claude",
+  "version": "0.2.0",
+  "description": "Enhanced Claude Code CLI — Your AI Coding Mate | Claude AI 编程助手",
+  "bin": {
+    "claudezh": "./bin/claudezh-wrapper.js",
+    "aiai-claude": "./bin/claudezh-wrapper.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "keywords": ["ai", "claude", "coding", "chinese", "中文", "编程", "助手", "cli", "aiai-go"],
+  "author": "aiaigo <hi@aiaigo.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aiai-go/claude"
+  },
+  "homepage": "https://aiaigo.org",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "aicodezh/**/*.py",
+    "pyproject.toml",
+    "setup.py",
+    "README.md"
+  ]
+}

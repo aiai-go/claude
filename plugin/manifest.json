@@ -1,0 +1,58 @@
+{
+  "manifest_version": "1.0.0",
+  "name": "aiai-go-claude",
+  "display_name": "@aiai-go/claude",
+  "version": "0.2.0",
+  "description": "Enhanced Claude Code with Chinese support, undo, safety hooks, 12 custom tools & 10 AI skills",
+  "long_description": "Multilingual AI coding assistant that adds Chinese language support, file undo, safety hooks, session resume, thinking control, quota tracking, and 12 custom MCP tools to Claude Code. Part of the aiai-go ecosystem.",
+  "author": {
+    "name": "aiaigo",
+    "email": "hi@aiaigo.org",
+    "url": "https://aiaigo.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aiai-go/claude"
+  },
+  "homepage": "https://aiaigo.org",
+  "server": {
+    "type": "python",
+    "entry_point": "server.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": ["${__dirname}/server.py"],
+      "env": {}
+    }
+  },
+  "tools": [
+    {"name": "project_memory_read", "description": "Read from project-specific memory store"},
+    {"name": "project_memory_write", "description": "Write to project-specific memory store"},
+    {"name": "project_memory_list", "description": "List all project memory keys"},
+    {"name": "code_stats", "description": "Count lines of code by language"},
+    {"name": "check_dependencies", "description": "Check for outdated dependencies"},
+    {"name": "git_summary", "description": "Git history summary by author"},
+    {"name": "git_blame_summary", "description": "File authorship breakdown"},
+    {"name": "git_changes_since", "description": "Recent git changes summary"},
+    {"name": "detect_environment", "description": "Detect OS, tools, and runtime versions"},
+    {"name": "note_add", "description": "Add a timestamped quick note"},
+    {"name": "note_list", "description": "List recent notes"},
+    {"name": "note_search", "description": "Search notes by keyword"}
+  ],
+  "prompts": [
+    {"name": "zh", "description": "Switch to Simplified Chinese mode", "text": "从现在开始，请用简体中文回答所有问题。代码注释使用中文。技术术语可保留英文但解释用中文。"},
+    {"name": "zht", "description": "Switch to Traditional Chinese mode", "text": "從現在開始，請用繁體中文回答所有問題。程式碼註釋使用中文。技術術語可保留英文但解釋用中文。"},
+    {"name": "en", "description": "Switch back to English mode", "text": "Switch back to English mode. Respond in English from now on."},
+    {"name": "review-zh", "description": "Code review in Chinese", "text": "用中文对当前项目进行代码审查。检查：Bug、安全漏洞、性能、可读性。按严重程度排序。"},
+    {"name": "explain-zh", "description": "Explain code in Chinese", "text": "用中文解释这段代码的功能和逻辑。先概述，再逐段解释。"},
+    {"name": "test-zh", "description": "Generate tests in Chinese", "text": "用中文为当前代码生成单元测试。覆盖正常路径和边界情况。"},
+    {"name": "fix-zh", "description": "Fix bugs in Chinese", "text": "用中文帮我分析并修复这个Bug。定位根因，解释原因，提供修复代码。"}
+  ],
+  "keywords": ["chinese", "multilingual", "i18n", "coding-assistant", "mcp-tools"],
+  "license": "MIT",
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  }
+}
