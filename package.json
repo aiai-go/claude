@@ -1,0 +1,29 @@
+{
+  "name": "claudezh",
+  "version": "0.1.0",
+  "description": "全中文 AI 编程助手 - Chinese AI Coding Assistant powered by Claude",
+  "bin": {
+    "claudezh": "./bin/claudezh-wrapper.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "keywords": ["ai", "claude", "coding", "chinese", "中文", "编程", "助手", "cli"],
+  "author": "whalelouie",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whaleaicode/claudezh"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "aicodezh/**/*.py",
+    "pyproject.toml",
+    "setup.py",
+    "README.md"
+  ]
+}

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claudezh"
+version = "0.1.0"
+description = "AI 编程助手（中文版）— 基于 Claude 的智能编程终端工具"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [{name = "whaletrader"}]
+keywords = ["ai", "coding", "chinese", "claude", "cli", "编程", "中文", "助手"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: Chinese (Traditional)",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+]
+dependencies = [
+    "claude-agent-sdk>=0.1.0",
+    "anthropic>=0.40.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+claudezh = "aicodezh.cli:run"
+
+[project.urls]
+Homepage = "https://github.com/whaletrader/claudezh"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aicodezh*"]
