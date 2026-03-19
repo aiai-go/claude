@@ -1,16 +1,12 @@
 <div align="center">
 
-```
-       _                 _          _
-   ___| | __ _ _   _  __| | ___ ___| |__
-  / __| |/ _` | | | |/ _` |/ _ \_  / '_ \
- | (__| | (_| | |_| | (_| |  __// /| | | |
-  \___|_|\__,_|\__,_|\__,_|\___/___|_| |_|
+<br/>
 
-  全 中 文  A I  编 程 助 手
-```
+# claudezh
 
-<h3>在终端用中文写代码，就像跟一个资深工程师对话一样自然。</h3>
+### Code in Chinese. Think in Chinese. Ship in Chinese.
+
+**The open-source Chinese-native AI coding agent for your terminal.**
 
 <br/>
 
@@ -18,6 +14,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/claudezh.svg?style=flat-square&color=3775A9&logo=pypi&logoColor=white)](https://pypi.org/project/claudezh/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/whaleaicode/claudezh?style=flat-square&color=e3b341&logo=github)](https://github.com/whaleaicode/claudezh/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/whaleaicode/claudezh?style=flat-square&color=97ca00&logo=github)](https://github.com/whaleaicode/claudezh/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/whaleaicode/claudezh?style=flat-square&color=d876e3&logo=github)](https://github.com/whaleaicode/claudezh/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/whaleaicode/claudezh/pulls)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D16-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Python](https://img.shields.io/badge/Python-%3E%3D3.10-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 
@@ -27,13 +26,105 @@
 
 <br/>
 
-<img src="https://img.shields.io/badge/DEMO-终端交互演示-blue?style=for-the-badge" alt="claudezh 终端交互演示 — 用户输入中文需求，AI 自动读取项目、编辑代码、执行命令"/>
-
-<sub>上图：在终端中用中文描述需求 → AI 自动分析项目结构 → 生成/修改代码 → 执行验证</sub>
-
 </div>
 
+> **One command. Full Chinese. Zero config.** Describe what you want in Chinese -- claudezh reads your project, writes code, runs tests, and ships changes. Powered by Claude.
+
 <br/>
+
+## Why claudezh?
+
+Every Chinese developer has felt it:
+
+**🧠 Context-switching kills flow** -- You think in Chinese, but your AI only speaks English. Every interaction forces a mental translation layer that breaks your creative momentum.
+
+**💸 You're already paying for Claude** -- Your Claude Code subscription sits there. Why pay again for another tool? claudezh reuses your existing subscription at zero additional cost.
+
+**🔧 AI doesn't know your domain** -- Generic AI gives generic answers. claudezh ships with 10 built-in expert personas (frontend, backend, DevOps, data science...) that understand your field instantly.
+
+<br/>
+
+## Quick Start
+
+```bash
+npm install -g claudezh    # Install globally
+claudezh                   # Launch in any project
+你> 帮我重构这个项目        # Start coding in Chinese
+```
+
+<br/>
+
+## Feature Highlights
+
+<table>
+<tr>
+<td align="center" width="25%"><b>🇨🇳 Full Chinese UX</b><br/><sub>Commands, prompts, tool output, error messages -- everything in Chinese</sub></td>
+<td align="center" width="25%"><b>🔌 Dual Backend</b><br/><sub>Reuse Claude Code subscription (free) or use API key (pay-per-use)</sub></td>
+<td align="center" width="25%"><b>🛠️ Agentic Tools</b><br/><sub>Read, write, search, execute, analyze -- all built in, no plugins needed</sub></td>
+<td align="center" width="25%"><b>🎭 10 Expert Skills</b><br/><sub>Frontend, backend, DevOps, data science, Git, DBA, QA and more</sub></td>
+</tr>
+<tr>
+<td align="center" width="25%"><b>📋 7 Preset Templates</b><br/><sub>Code review, bug fix, refactor, test generation, and more -- one command away</sub></td>
+<td align="center" width="25%"><b>🔒 Safety Controls</b><br/><sub>Auto-intercepts dangerous commands. Safe mode confirms before every destructive op</sub></td>
+<td align="center" width="25%"><b>🌐 Trilingual i18n</b><br/><sub>Simplified Chinese, Traditional Chinese, and English. Switch with /语言</sub></td>
+<td align="center" width="25%"><b>💾 Session Memory</b><br/><sub>Auto-saves conversation history. Resume where you left off across sessions</sub></td>
+</tr>
+</table>
+
+<br/>
+
+## See It In Action
+
+```
+$ claudezh
+
+╭─────────────────────────────────────────────────╮
+│  claudezh v0.2.0 — AI 编程助手                   │
+│  📁 ~/my-saas-app                                │
+│  🤖 Claude Sonnet  |  🛡️ 订阅模式 (免费)         │
+╰─────────────────────────────────────────────────╯
+
+你> 这个项目有安全漏洞吗？帮我全面审查一下
+
+助手> 正在扫描项目...
+
+  🔍 Glob  | 扫描 **/*.py — 找到 47 个文件
+  📖 Read  | app/auth.py, app/api/orders.py, app/db.py
+  🔎 Grep  | 搜索 SQL 拼接、硬编码密钥、eval() 调用
+
+  ⚠️ 发现 3 个安全问题：
+
+  🔴 严重 — app/api/orders.py:128
+     SQL 注入: f"SELECT * FROM orders WHERE id = {user_input}"
+     → 已修复为参数化查询
+
+  🔴 严重 — app/auth.py:45
+     JWT Secret 硬编码在源码中
+     → 已迁移至环境变量
+
+  🟡 中等 — app/api/products.py:67
+     分页 limit 无上限，可被恶意请求打爆
+     → 已添加 max(limit, 100) 校验
+
+  ✅ 3 个漏洞已自动修复，所有测试通过
+```
+
+<br/>
+
+<div align="center">
+
+## Like what you see? Give us a star.
+
+Every star helps more Chinese developers discover a better AI coding experience.
+**claudezh is free, open-source, and built for our community.**
+
+[![Star claudezh](https://img.shields.io/github/stars/whaleaicode/claudezh?style=social)](https://github.com/whaleaicode/claudezh/stargazers)
+
+<br/>
+
+<sub>claudezh is an independent open-source project and is not affiliated with Anthropic.</sub>
+
+</div>
 
 ---
 
